@@ -1,0 +1,10 @@
+{
+	"name": "PC Mario Maker",
+	"description": "A port of various Mario engines to the PC.",
+	"copyright": "Copyright © 2015, Gratop",
+	"authors": ["Gratop"],
+	"dependencies": {
+	  "derelict-sdl2": "~>1.9.7",
+	  "etcetera": "~>1.0.9"
+	}
+}
