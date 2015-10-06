@@ -36,13 +36,13 @@ abstract class Entity {
   public void updatePositionX() {
     blocked.right = false;
     blocked.left = false;
-    x += velX/60;
+    x += velX/60.0;
   }
 
   public void updatePositionY() {
     blocked.up = false;
     blocked.down = false;
-    y += velY/60;
+    y += velY/60.0;
   }
 
   public void checkTerrainCollisionX() {
@@ -50,7 +50,10 @@ abstract class Entity {
   }
 
   public void checkTerrainCollisionY() {
-
+    if (y > 20) {
+      y = 20;
+      blocked.down = true;
+    }
   }
 
 }

@@ -30,11 +30,13 @@ void main() {
     BitArray([0, 1, 1, 0, 0, 1]),
   ]);
 
+  game.tileobjs ~= t;
 
   SDL_Event e;
   
   while (!stop) {
     //GC.disable;
+    game.frame++;
 
     //pre-event polling
     controller.update;
@@ -72,6 +74,14 @@ void main() {
 
     foreach (ent; game.entities) {
       ent.updatePositionX;
+    }
+
+    foreach (ent; game.entities) {
+      ent.checkTerrainCollisionY;
+    }
+
+    foreach (ent; game.entities) {
+      ent.checkTerrainCollisionX;
     }
 
     if (!MINIMIZED) {
