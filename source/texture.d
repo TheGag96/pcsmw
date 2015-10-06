@@ -78,7 +78,7 @@ class Texture {
     }
 
     SDL_Rect renderQuad = {x, y, width, height};
-    if (!MINIMIZED) SDL_RenderCopy(RENDERER, texture, null, &renderQuad);
+    SDL_RenderCopy(RENDERER, texture, null, &renderQuad);
   }
 
   public void render(float x, float y, in rect r, bool flip = false) {
@@ -92,14 +92,13 @@ class Texture {
     renderQuad.w = r.w;
     renderQuad.h = r.h;
 
-    if (!MINIMIZED)
-      SDL_RenderCopyEx(RENDERER,
-                       texture,
-                       &clip,
-                       &renderQuad,
-                       0,
-                       null,
-                       flip);
+    SDL_RenderCopyEx(RENDERER,
+                     texture,
+                     &clip,
+                     &renderQuad,
+                     0,
+                     null,
+                     flip);
   }
 
   public void renderShadow(int x, int y) {
@@ -109,7 +108,7 @@ class Texture {
     }
 
     SDL_Rect renderQuad = {x+3, y+3, width, height};
-    if (!MINIMIZED) SDL_RenderCopy(RENDERER, texture, null, &renderQuad);
+    SDL_RenderCopy(RENDERER, texture, null, &renderQuad);
   }
 
   public void renderShadow(float x, float y, in rect r, bool flip = false) {
@@ -123,13 +122,12 @@ class Texture {
     renderQuad.w = r.w;
     renderQuad.h = r.h;
 
-    if (!MINIMIZED)
-      SDL_RenderCopyEx(RENDERER,
-                       texture,
-                       &clip,
-                       &renderQuad,
-                       0,
-                       null,
-                       flip);
+    SDL_RenderCopyEx(RENDERER,
+                     texture,
+                     &clip,
+                     &renderQuad,
+                     0,
+                     null,
+                     flip);
   }
 }

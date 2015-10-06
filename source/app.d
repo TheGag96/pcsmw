@@ -36,7 +36,6 @@ void main() {
   
   while (!stop) {
     //GC.disable;
-    game.frame++;
 
     //pre-event polling
     controller.update;
@@ -62,6 +61,10 @@ void main() {
       }
     }
     
+    if (MINIMIZED) continue;
+
+    game.frame++;
+
     //Entity logic checks
     foreach (ent; game.entities) {
       ent.logic;
@@ -84,11 +87,10 @@ void main() {
       ent.checkTerrainCollisionX;
     }
 
-    if (!MINIMIZED) {
-      SDL_SetRenderTarget(RENDERER, SCREEN_TEX); 
-      SDL_SetRenderDrawColor(RENDERER, 0xFF, 0xFF, 0xFF, 0xFF);
-      SDL_RenderClear(RENDERER);
-    }
+    SDL_SetRenderTarget(RENDERER, SCREEN_TEX); 
+    SDL_SetRenderDrawColor(RENDERER, 0xFF, 0xFF, 0xFF, 0xFF);
+    SDL_RenderClear(RENDERER);
+
 
     //Draw shadows
     t.drawShadow;
@@ -105,13 +107,12 @@ void main() {
     }
 
 
-    
-    if (!MINIMIZED) { 
-      SDL_SetRenderTarget(RENDERER, null); 
-      static immutable SDL_Rect renderQuad = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
-      SDL_RenderCopy(RENDERER, SCREEN_TEX, null, &renderQuad);
-      SDL_RenderPresent(RENDERER);
-    }
+
+    SDL_SetRenderTarget(RENDERER, null); 
+    static immutable SDL_Rect renderQuad = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+    SDL_RenderCopy(RENDERER, SCREEN_TEX, null, &renderQuad);
+    SDL_RenderPresent(RENDERER);
+
     //Delay for next frame
     //SDL_Delay(16);
     //GC.enable;
@@ -144,7 +145,7 @@ bool init() {
     return false;
   }
 
-  WINDOW = SDL_CreateWindow("PC Mario Maker", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+  WINDOW = SDL_CreateWindow("PC Mario Maker", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_RESIZABLE);
   if (WINDOW is null) {
     writeln("Window could not be created! SDL_Error: ", SDL_GetError());
     return false;

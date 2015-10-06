@@ -141,24 +141,21 @@ class Terrain {
     //This is far, FAR faster. Thanks SO user gnidmoo    
     if (bigTex is null) render();
 
-    if (!MINIMIZED) { 
-      SDL_Rect renderQuad = {x, y, width, height};
-      SDL_SetTextureColorMod(bigTex, 255, 255, 255);
-      SDL_SetTextureAlphaMod(bigTex, 255);
-      
-      SDL_RenderCopy(RENDERER, bigTex, null, &renderQuad);
-    }
+    SDL_Rect renderQuad = {x, y, width, height};
+    SDL_SetTextureColorMod(bigTex, 255, 255, 255);
+    SDL_SetTextureAlphaMod(bigTex, 255);
+    
+    SDL_RenderCopy(RENDERER, bigTex, null, &renderQuad);
   }
 
   public void drawShadow() {
     if (bigTex is null) render();
-    if (!MINIMIZED) {
-      SDL_SetTextureColorMod(bigTex, 0, 0, 0);
-      SDL_SetTextureAlphaMod(bigTex, 64);
+    SDL_SetTextureColorMod(bigTex, 0, 0, 0);
+    SDL_SetTextureAlphaMod(bigTex, 64);
 
-      SDL_Rect shadowQuad = {x+3, y+3, width, height};
-      SDL_RenderCopy(RENDERER, bigTex, null, &shadowQuad);
-    }
+    SDL_Rect shadowQuad = {x+3, y+3, width, height};
+    SDL_RenderCopy(RENDERER, bigTex, null, &shadowQuad);
+    
   }
 
 }
