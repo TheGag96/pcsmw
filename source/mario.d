@@ -6,6 +6,7 @@ class Mario : Entity {
   static Texture marioTexture = null;
 
   bool jumping = false, spinjumping = false, runJumping = false;
+  bool ducking = false;
   bool direction = false; //false for left, right for true
 
   //SMW velocities are in pixels per 16 frames; must convert each to blocks per second
@@ -118,9 +119,9 @@ class Mario : Entity {
       }
 
       if (jumpCoeff != 0) {
-        if      (abs(velX) >= MAX_RUN) velY = JUMPVEL_RUN*jumpCoeff;
-        else if (abs(velX) >= MAX_JOG) velY = JUMPVEL_JOG*jumpCoeff;
-        else                           velY = JUMPVEL_WALK*jumpCoeff;
+        if      (abs(velX) >= MAX_RUN) velY = JUMPVEL_RUN  * jumpCoeff;
+        else if (abs(velX) >= MAX_JOG) velY = JUMPVEL_JOG  * jumpCoeff;
+        else                           velY = JUMPVEL_WALK * jumpCoeff;
       }
       else {
         jumping = false;
@@ -131,6 +132,9 @@ class Mario : Entity {
         }
         spinjumping = false;
       }
+
+      if (controller.pressed("down") && !spinjumping) ducking = true;
+      else ducking = false;
     }
 
     ////
@@ -139,8 +143,6 @@ class Mario : Entity {
 
     if (controller.pressed("jump") || controller.pressed("spinjump")) velY += GRAVITY_HOLDA;
     else velY += GRAVITY;
-
-    if (jumping) writeln(velY);
   }
   
   public override void draw() {
@@ -181,11 +183,11 @@ class Mario : Entity {
   public void updateAnimation() {
     animation* prev = chosenAnim;
     if (state == 0) {
-      if (blocked.down) {
-        if (controller.pressed("down")) {
-          chosenAnim = &DUCKING;
-        }
-        else if (controller.pressed("left")) {
+      if (ducking) {
+        chosenAnim = &DUCKING;
+      }
+      else if (blocked.down) {
+        if (controller.pressed("left")) {
           if (velX <= -MAX_RUN) {
             chosenAnim = &RUNNING;
           }

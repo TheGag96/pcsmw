@@ -84,8 +84,8 @@ class Terrain {
     this.x = x*16;
     this.y = y*16;
 
-    this.width = 16*bits[0].length;
-    this.height = 16*bits.length;
+    this.width = cast(int)(16*bits[0].length);
+    this.height = cast(int)(16*bits.length);
 
     foreach (row; 0..bits.length) {  
       foreach (col; 0..bits[0].length) { 
@@ -111,7 +111,7 @@ class Terrain {
         if ((index & 0b0101) == 0b0101 && (~filledDiag & 0b0001)) corners |= 0b0001;
 
         //tiles ~= tile(col, row, pic_map[index], corner_map[corners]);
-        tiles[cast(long)row << 32 | cast(long)col] = tile(col, row, pic_map[index], corner_map[corners]);
+        tiles[cast(long)row << 32 | cast(long)col] = tile(cast(int)col, cast(int)row, pic_map[index], corner_map[corners]);
       }
     }
   }
