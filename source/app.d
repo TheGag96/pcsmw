@@ -2,8 +2,8 @@ import std.stdio, std.algorithm, std.string, std.conv, std.bitmanip, core.memory
 import derelict.sdl2.sdl, derelict.sdl2.image, derelict.sdl2.mixer, derelict.sdl2.ttf;
 import texture, entity, mario, input, game, terrain;
 
-public immutable int SCREEN_WIDTH = 1280;
-public immutable int SCREEN_HEIGHT = 720;
+public int SCREEN_WIDTH = 1280;
+public int SCREEN_HEIGHT = 720;
 
 public float SCALE = 2;
 
@@ -63,6 +63,8 @@ void main() {
     
     if (MINIMIZED) continue;
 
+    checkForResize();
+
     game.frame++;
 
     //Entity logic checks
@@ -109,7 +111,7 @@ void main() {
 
 
     SDL_SetRenderTarget(RENDERER, null); 
-    static immutable SDL_Rect renderQuad = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+    SDL_Rect renderQuad = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
     SDL_RenderCopy(RENDERER, SCREEN_TEX, null, &renderQuad);
     SDL_RenderPresent(RENDERER);
 
@@ -121,6 +123,16 @@ void main() {
   
   //Clean up everything before closing out
   quit();
+}
+
+void checkForResize() {
+    int prevW = SCREEN_WIDTH, prevH = SCREEN_HEIGHT;
+    SDL_GetWindowSize(WINDOW, &SCREEN_WIDTH, &SCREEN_HEIGHT);
+    if (prevW != SCREEN_WIDTH || prevH != SCREEN_HEIGHT) {
+      SDL_DestroyTexture(SCREEN_TEX);
+      SCREEN_TEX = SDL_CreateTexture(RENDERER, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, SCREEN_WIDTH, SCREEN_HEIGHT);
+    }
+
 }
 
 ///Initialize all SDL stuff and return false if it fails (this leads to the game quitting immediately)

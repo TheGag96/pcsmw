@@ -47,6 +47,8 @@ class Mario : Entity {
   int runTimer = 0;
   static immutable int RUN_TIMER_MAX = 56;
   
+  bool spinDir;
+
   public override void logic() {
     ////
     //Handle horizontal movement
@@ -100,6 +102,7 @@ class Mario : Entity {
 
     if (spinjumping) {
       direction = true;
+      if (!blocked.down) spinDir = cast(bool)((1-((game.frame - animStart) % (SPINNING.frames*SPINNING.delay))) / SPINNING.delay / 2);
     }
 
     ////
@@ -128,10 +131,7 @@ class Mario : Entity {
       else {
         jumping = false;
         runJumping = false;
-        if (spinjumping) {
-          //TODO: fix
-          //direction = cast(bool)((1-((game.frame - animStart) % (SPINNING.frames*SPINNING.delay))) / SPINNING.delay / 2);
-        }
+        if (spinjumping) direction = spinDir;
         spinjumping = false;
       }
 
