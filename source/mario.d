@@ -42,6 +42,8 @@ class Mario : Entity {
 
   static immutable float[] SPEED_CYCLE = [0, 2 /16.0*60/16, 1 /16.0*60/16, 0, 1 /16.0*60/16];
   
+  static immutable float TERMINAL_VELOCITY = 70.0 /16*60/16;
+
   int runTimer = 0;
   static immutable int RUN_TIMER_MAX = 56;
   
@@ -143,6 +145,7 @@ class Mario : Entity {
 
     if (controller.pressed("jump") || controller.pressed("spinjump")) velY += GRAVITY_HOLDA;
     else velY += GRAVITY;
+    if (velY > TERMINAL_VELOCITY) velY = TERMINAL_VELOCITY;
   }
   
   public override void draw() {
@@ -168,11 +171,12 @@ class Mario : Entity {
 
   static animation STANDING = animation(0,  0,   16, 32, 1, 1);
   static animation LOOK_UP  = animation(64,  0,   16, 32, 1, 1);
-  static animation WALKING  = animation(0,  0,   16, 32, 3, 8);
+  static animation WALKING  = animation(0,  0,   16, 32, 3, 6);
+  static animation JOGGING  = animation(0,  0,   16, 32, 3, 3);
   static animation DUCKING  = animation(0,  64,  16, 16, 1, 1, 0, 16);
   static animation JUMPING  = animation(0,  32,  16, 32, 1, 1);
   static animation FALLING  = animation(16, 32,  16, 32, 1, 1);
-  static animation RUNNING  = animation(0,  80,  32, 32, 3, 2, -8, 0);
+  static animation RUNNING  = animation(0,  80,  32, 32, 5, 2, -8, 0);
   static animation RUN_JUMP = animation(0,  112, 32, 32, 1, 1, -8, 0);
   static animation TURNING  = animation(48, 0, 16, 32, 1, 1);
   static animation SPINNING = animation(96, 0, 16, 32, 4, 3);
@@ -191,6 +195,9 @@ class Mario : Entity {
           if (velX <= -MAX_RUN) {
             chosenAnim = &RUNNING;
           }
+          else if (velX <= -MAX_JOG) {
+            chosenAnim = &JOGGING;
+          }
           else if (velX <= 0) {
             chosenAnim = &WALKING;
           }
@@ -201,6 +208,9 @@ class Mario : Entity {
         else if (controller.pressed("right")) {
           if (velX >= MAX_RUN) {
             chosenAnim = &RUNNING;
+          }
+          else if (velX >= MAX_JOG) {
+            chosenAnim = &JOGGING;
           }
           else if (velX >= 0) {
             chosenAnim = &WALKING;
