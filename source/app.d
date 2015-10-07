@@ -138,18 +138,11 @@ void checkForResize() {
 ///Initialize all SDL stuff and return false if it fails (this leads to the game quitting immediately)
 bool init() {
   //Make Derelict load all SDL libraries
-  version (Windows) {
-    DerelictSDL2.load("dlls\\SDL2.dll");
-    DerelictSDL2Image.load("dlls\\SDL2_image.dll");
-    DerelictSDL2Mixer.load("dlls\\SDL2_mixer.dll");
-    DerelictSDL2ttf.load("dlls\\SDL2_ttf.dll");
-  }
-  else {
-    DerelictSDL2.load();
-    DerelictSDL2Image.load();
-    DerelictSDL2Mixer.load();
-    DerelictSDL2ttf.load();
-  }
+  DerelictSDL2.load();
+  DerelictSDL2Image.load();
+  DerelictSDL2Mixer.load();
+  DerelictSDL2ttf.load();
+
 
   //Load SDL Window and Renderer, checking for errors
   if (SDL_Init( SDL_INIT_VIDEO ) < 0) {
