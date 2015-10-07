@@ -93,7 +93,7 @@ class Mario : Entity {
     }
 
 
-    if (controller.pressed("run") && abs(velX) >= MAX_JOG && !ducking) {
+    if (controller.pressed("run") && abs(velX) >= MAX_JOG && !ducking && blocked.down) {
       if (runTimer < RUN_TIMER_MAX) runTimer++;
     }
     else {
