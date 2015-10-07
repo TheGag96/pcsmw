@@ -60,7 +60,7 @@ class Mario : Entity {
       else targetVel = MAX_JOG;
     }
 
-    if (blocked.down && (controller.pressed("down") || (!controller.pressed("right") && !controller.pressed("left")))) {
+    if (blocked.down && (ducking || (!controller.pressed("right") && !controller.pressed("left")))) {
       float prev = sgn(velX);
       if (velX != 0) {
         velX -= sgn(velX)*FRICTION;
@@ -93,7 +93,7 @@ class Mario : Entity {
     }
 
 
-    if (controller.pressed("run") && abs(velX) >= MAX_JOG) {
+    if (controller.pressed("run") && abs(velX) >= MAX_JOG && !ducking) {
       if (runTimer < RUN_TIMER_MAX) runTimer++;
     }
     else {
@@ -131,7 +131,11 @@ class Mario : Entity {
       else {
         jumping = false;
         runJumping = false;
-        if (spinjumping) direction = spinDir;
+        if (spinjumping) { 
+          if      (controller.pressed("left") && velX < 0)  direction = false;
+          else if (controller.pressed("right") && velX > 0) direction = true;
+          else                                              direction = spinDir;
+        }
         spinjumping = false;
       }
 
@@ -176,7 +180,7 @@ class Mario : Entity {
   static animation DUCKING  = animation(0,  64,  16, 16, 1, 1, 0, 16);
   static animation JUMPING  = animation(0,  32,  16, 32, 1, 1);
   static animation FALLING  = animation(16, 32,  16, 32, 1, 1);
-  static animation RUNNING  = animation(0,  80,  32, 32, 5, 2, -8, 0);
+  static animation RUNNING  = animation(0,  80,  32, 32, 5, 1, -8, 0);
   static animation RUN_JUMP = animation(0,  112, 32, 32, 1, 1, -8, 0);
   static animation TURNING  = animation(48, 0, 16, 32, 1, 1);
   static animation SPINNING = animation(96, 0, 16, 32, 4, 3);
