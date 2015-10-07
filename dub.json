@@ -1,8 +1,8 @@
 {
 	"name": "pcmariomaker",
 	"description": "A port of various Mario engines to the PC.",
-	"copyright": "Copyright © 2015, Gratop",
-	"authors": ["Gratop"],
+	"copyright": "Copyright © 2015, TheGag96",
+	"authors": ["TheGag96"],
 	"dependencies": {
 	  "derelict-sdl2": "~>1.9.7",
 	  "etcetera": "~>1.0.9"
