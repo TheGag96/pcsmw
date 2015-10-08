@@ -1,9 +1,9 @@
 import std.stdio, std.string, std.typecons;
 import derelict.sdl2.sdl, derelict.sdl2.image;
-import app;
+import app, util;
 
 alias color = Tuple!(ubyte, "r", ubyte, "g", ubyte, "b");
-alias rect = Tuple!(int, "x", int, "y", int, "w", int, "h");
+alias intrect = Tuple!(int, "x", int, "y", int, "width", int, "height");
 
 class Texture {
   public int width, height;
@@ -81,16 +81,16 @@ class Texture {
     SDL_RenderCopy(RENDERER, texture, null, &renderQuad);
   }
 
-  public void render(float x, float y, in rect r, bool flip = false) {
+  public void render(float x, float y, in intrect r, bool flip = false) {
 
-    SDL_Rect clip = {r.x, r.y, r.w, r.h};
-    SDL_Rect renderQuad = {cast(int)(x*16), cast(int)(y*16), r.w, r.h};
+    SDL_Rect clip = {r.x, r.y, r.width, r.height};
+    SDL_Rect renderQuad = {cast(int)(x*16), cast(int)(y*16), r.width, r.height};
 
     SDL_SetTextureColorMod(texture, 255, 255, 255);
     SDL_SetTextureAlphaMod(texture, 255);
 
-    renderQuad.w = r.w;
-    renderQuad.h = r.h;
+    renderQuad.w = r.width;
+    renderQuad.h = r.height;
 
     SDL_RenderCopyEx(RENDERER,
                      texture,
@@ -111,16 +111,16 @@ class Texture {
     SDL_RenderCopy(RENDERER, texture, null, &renderQuad);
   }
 
-  public void renderShadow(float x, float y, in rect r, bool flip = false) {
+  public void renderShadow(float x, float y, in intrect r, bool flip = false) {
 
-    SDL_Rect clip = {r.x, r.y, r.w, r.h};
-    SDL_Rect renderQuad = {cast(int)(x*16+3), cast(int)(y*16+3), r.w, r.h};
+    SDL_Rect clip = {r.x, r.y, r.width, r.height};
+    SDL_Rect renderQuad = {cast(int)(x*16+3), cast(int)(y*16+3), r.width, r.height};
 
     SDL_SetTextureColorMod(texture, 0, 0, 0);
     SDL_SetTextureAlphaMod(texture, 64);
 
-    renderQuad.w = r.w;
-    renderQuad.h = r.h;
+    renderQuad.w = r.width;
+    renderQuad.h = r.height;
 
     SDL_RenderCopyEx(RENDERER,
                      texture,

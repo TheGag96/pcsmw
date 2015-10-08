@@ -1,4 +1,4 @@
-import texture, app;
+import texture, app, blocks, util;
 import std.bitmanip, std.stdio;
 import derelict.sdl2.sdl;
 
@@ -9,38 +9,38 @@ class Terrain {
   int width, height;
 
   //clipping types
-  static rect TOP_LEFT     = rect(0, 0, 16, 16);
-  static rect TOP          = rect(16, 0, 16, 16);
-  static rect TOP_RIGHT    = rect(32, 0, 16, 16);
-  static rect LEFT         = rect(0, 16, 16, 16);
-  static rect CENTER       = rect(16, 16, 16, 16);
-  static rect RIGHT        = rect(32, 16, 16, 16);
-  static rect BOTTOM_LEFT  = rect(0, 32, 16, 16);
-  static rect BOTTOM       = rect(16, 32, 16, 16);
-  static rect BOTTOM_RIGHT = rect(32, 32, 16, 16);
-  static rect SINGLE       = rect(48, 0, 16, 16);
-  static rect COLUMN       = rect(48, 16, 16, 16);
-  static rect ROW          = rect(48, 32, 16, 16);
-  static rect LOW_COL      = rect(48, 48, 16, 16);
-  static rect HIGH_COL     = rect(16, 48, 16, 16);
-  static rect LEFT_ROW     = rect(0, 48, 16, 16);
-  static rect RIGHT_ROW    = rect(32, 48, 16, 16);
+  static intrect TOP_LEFT     = intrect(0, 0, 16, 16);
+  static intrect TOP          = intrect(16, 0, 16, 16);
+  static intrect TOP_RIGHT    = intrect(32, 0, 16, 16);
+  static intrect LEFT         = intrect(0, 16, 16, 16);
+  static intrect CENTER       = intrect(16, 16, 16, 16);
+  static intrect RIGHT        = intrect(32, 16, 16, 16);
+  static intrect BOTTOM_LEFT  = intrect(0, 32, 16, 16);
+  static intrect BOTTOM       = intrect(16, 32, 16, 16);
+  static intrect BOTTOM_RIGHT = intrect(32, 32, 16, 16);
+  static intrect SINGLE       = intrect(48, 0, 16, 16);
+  static intrect COLUMN       = intrect(48, 16, 16, 16);
+  static intrect ROW          = intrect(48, 32, 16, 16);
+  static intrect LOW_COL      = intrect(48, 48, 16, 16);
+  static intrect HIGH_COL     = intrect(16, 48, 16, 16);
+  static intrect LEFT_ROW     = intrect(0, 48, 16, 16);
+  static intrect RIGHT_ROW    = intrect(32, 48, 16, 16);
 
-  static rect CORNER_DL       = rect(16, 64, 16, 16);
-  static rect CORNER_DR       = rect(0, 64, 16, 16);
-  static rect CORNER_UL       = rect(16, 80, 16, 16);
-  static rect CORNER_UR       = rect(0, 80, 16, 16);
-  static rect CORNER_UL_DL    = rect(32, 64, 16, 16);
-  static rect CORNER_UL_UR    = rect(48, 64, 16, 16);
-  static rect CORNER_DL_DR    = rect(32, 80, 16, 16);
-  static rect CORNER_UR_DR    = rect(48, 80, 16, 16);
-  static rect CORNER_UR_DL    = rect(0, 112, 16, 16);
-  static rect CORNER_UL_DR    = rect(16, 112, 16, 16);
-  static rect CORNER_UR_DL_DR = rect(0, 96, 16, 16);
-  static rect CORNER_UL_UR_DR = rect(16, 96, 16, 16);
-  static rect CORNER_UL_UR_DL = rect(32, 96, 16, 16);
-  static rect CORNER_UL_DL_DR = rect(48, 96, 16, 16);
-  static rect CORNER_ALL      = rect(48, 112, 16, 16);
+  static intrect CORNER_DL       = intrect(16, 64, 16, 16);
+  static intrect CORNER_DR       = intrect(0, 64, 16, 16);
+  static intrect CORNER_UL       = intrect(16, 80, 16, 16);
+  static intrect CORNER_UR       = intrect(0, 80, 16, 16);
+  static intrect CORNER_UL_DL    = intrect(32, 64, 16, 16);
+  static intrect CORNER_UL_UR    = intrect(48, 64, 16, 16);
+  static intrect CORNER_DL_DR    = intrect(32, 80, 16, 16);
+  static intrect CORNER_UR_DR    = intrect(48, 80, 16, 16);
+  static intrect CORNER_UR_DL    = intrect(0, 112, 16, 16);
+  static intrect CORNER_UL_DR    = intrect(16, 112, 16, 16);
+  static intrect CORNER_UR_DL_DR = intrect(0, 96, 16, 16);
+  static intrect CORNER_UL_UR_DR = intrect(16, 96, 16, 16);
+  static intrect CORNER_UL_UR_DL = intrect(32, 96, 16, 16);
+  static intrect CORNER_UL_DL_DR = intrect(48, 96, 16, 16);
+  static intrect CORNER_ALL      = intrect(48, 112, 16, 16);
 
   //stores bit combinations of what tile image to use based on which sides
   //a block has adjacent neighboring tiles.
@@ -48,11 +48,11 @@ class Terrain {
   //Format for corner_map: (UL)(UR)(DL)(DR)
   //Ex: A tile with neighbors on the left, right, and bottom will have the combination
   //    0111, which is 7, so it will have the "TOP" tile picture.
-  static rect*[] pic_map, corner_map;
+  static intrect*[] pic_map, corner_map;
 
   private struct tile {
     int x, y;
-    rect* pic, corner;
+    intrect* pic, corner;
   }
 
   //tile[] tiles;
@@ -118,6 +118,13 @@ class Terrain {
 
   public ~this() {
     if (bigTex !is null) SDL_DestroyTexture(bigTex);
+  }
+
+  public block getBlockAt(int x, int y) {
+    if ((cast(long)(y-this.y/16) << 32 | cast(long)(x-this.x/16)) in tiles) {
+      return block(BlockType.SOLID, rectangle(x, y, 1, 1));
+    }
+    return block(BlockType.EMPTY, rectangle(0,0,0,0));
   }
 
   public void render() {

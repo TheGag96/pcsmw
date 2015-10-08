@@ -21,7 +21,7 @@ void main() {
 
   Mario mario = new Mario;
 
-  Terrain t = new Terrain(10, 10, [
+  Terrain t = new Terrain(1, 15, [
     BitArray([1, 0, 1, 1, 1, 0]),
     BitArray([1, 1, 1, 1, 1, 0]),
     BitArray([0, 0, 1, 1, 1, 0]),

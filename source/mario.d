@@ -19,6 +19,7 @@ class Mario : Entity {
     x = 0; y = 0;
     velX = 0; velY = 0;
     drawWidth = 16; drawHeight = 32;
+    width = 1; height = 2;
     texture.scaleX = 2; texture.scaleY = 2;
   }
   
@@ -156,14 +157,14 @@ class Mario : Entity {
     int frameIndex = ((game.frame - animStart) % (chosenAnim.frames*chosenAnim.delay)) / chosenAnim.delay;
     texture.render(x + chosenAnim.offsetX/16.0, 
                    y + 1.0/16+chosenAnim.offsetY/16.0, 
-                   rect(chosenAnim.x + chosenAnim.width*frameIndex, chosenAnim.y, chosenAnim.width, chosenAnim.height),
+                   intrect(chosenAnim.x + chosenAnim.width*frameIndex, chosenAnim.y, chosenAnim.width, chosenAnim.height),
                    !direction);
   }
 
   public override void drawShadow() {
     updateAnimation();
     int frameIndex = ((game.frame - animStart) % (chosenAnim.frames*chosenAnim.delay)) / chosenAnim.delay;
-    texture.renderShadow(x + chosenAnim.offsetX/16.0, y + 1.0/16+chosenAnim.offsetY/16.0, rect(chosenAnim.x + chosenAnim.width*frameIndex, chosenAnim.y, chosenAnim.width, chosenAnim.height), !direction);
+    texture.renderShadow(x + chosenAnim.offsetX/16.0, y + 1.0/16+chosenAnim.offsetY/16.0, intrect(chosenAnim.x + chosenAnim.width*frameIndex, chosenAnim.y, chosenAnim.width, chosenAnim.height), !direction);
   }
 
   struct animation {
