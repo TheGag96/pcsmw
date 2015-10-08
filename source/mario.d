@@ -19,8 +19,13 @@ class Mario : Entity {
 
 
   public this() {
-    if (marioTexture is null) marioTexture = new Texture("data/mario.png");
-    texture = marioTexture;
+    texture = util.getTexture("mario_big");
+    if (texture is null) {
+      texture = util.registerTexture("mario_big", new Texture("data/mario.png"));
+    }
+
+    //if (marioTexture is null) marioTexture = new Texture("data/mario.png");
+    //texture = marioTexture;
     x = 0; y = 0;
     velX = 0; velY = 0;
     drawWidth = 16; drawHeight = 32;

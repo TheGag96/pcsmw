@@ -63,7 +63,10 @@ class Terrain {
 
 
   public static void init() {
-    tileset = new Texture("data/grassy.png");
+    tileset = util.getTexture("grassy");
+    if (tileset is null) {
+      tileset = util.registerTexture("grassy", new Texture("data/grassy.png"));
+    }
 
     pic_map = 
     [&SINGLE,   &LEFT_ROW,    &RIGHT_ROW,    &ROW,

@@ -1,9 +1,28 @@
 import std.typecons, std.stdio;
-import game, blocks, terrain;
+import game, blocks, terrain, texture;
 
 alias rectangle = Tuple!(float, "x", float, "y", float, "width", float, "height");
 
-protected bool intersects(rectangle r, rectangle other) {
+private Texture[string] textures;
+
+
+////
+//Helpful functions
+////
+
+Texture getTexture(string name) {
+  Texture* ptr = name in textures;
+  return ptr is null ? null : *ptr;
+}
+
+Texture registerTexture(string name, Texture tex) {
+  if (name !in textures) {
+    textures[name] = tex;
+  }
+  return tex;
+}
+
+bool intersects(rectangle r, rectangle other) {
   if (r.x < other.x+other.width && r.x+r.width > other.x) {
     if (r.y < other.y+other.height && r.y+r.height > other.y) {
       return true;
