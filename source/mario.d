@@ -9,9 +9,6 @@ class Mario : Entity {
   bool ducking = false;
   bool direction = false; //false for left, right for true
 
-  //SMW velocities are in pixels per 16 frames; must convert each to blocks per second
-
-
 
   public this() {
     if (marioTexture is null) marioTexture = new Texture("data/mario.png");
@@ -19,9 +16,12 @@ class Mario : Entity {
     x = 0; y = 0;
     velX = 0; velY = 0;
     drawWidth = 16; drawHeight = 32;
-    width = 1; height = 2;
+    drawOffsetX = -2, drawOffsetY = 1 - 7;
+    width = 0.75; height = 25/16.0;
     texture.scaleX = 2; texture.scaleY = 2;
   }
+
+  //SMW velocities are in pixels per 16 frames; must convert each to blocks per second
   
   static immutable float GRAVITY       = 6.0 /16*60/16;
   static immutable float GRAVITY_HOLDA = 3.0 /16*60/16;
@@ -50,6 +50,11 @@ class Mario : Entity {
   
   bool spinDir;
 
+  static immutable float HEIGHT_NORMAL = 25.0/16;
+  static immutable float HEIGHT_DUCKING = 14.0/16;
+
+  bool wasDucking = false;
+
   public override void logic() {
     ////
     //Handle horizontal movement
@@ -57,7 +62,7 @@ class Mario : Entity {
 
     float targetVel = MAX_WALK;
     if (controller.pressed("run")) {
-      if (runTimer == RUN_TIMER_MAX) targetVel = MAX_RUN;
+      if (runTimer == RUN_TIMER_MAX  && (blocked.down || jumping)) targetVel = MAX_RUN;
       else targetVel = MAX_JOG;
     }
 
@@ -93,12 +98,11 @@ class Mario : Entity {
       direction = true;
     }
 
-
-    if (controller.pressed("run") && abs(velX) >= MAX_JOG && !ducking && blocked.down) {
+    if (controller.pressed("run") && abs(velX) >= MAX_JOG && !ducking) {
       if (runTimer < RUN_TIMER_MAX) runTimer++;
     }
     else {
-      if (runTimer > 0 && blocked.down) runTimer--;
+      if (runTimer > 0 && (blocked.down || !jumping)) runTimer--;
     }
 
     if (spinjumping) {
@@ -109,6 +113,8 @@ class Mario : Entity {
     ////
     //Jumping (velocity depends on player speed)
     ////
+
+    wasDucking = ducking;
 
     if (blocked.down) {
       float jumpCoeff = 0;
@@ -151,12 +157,25 @@ class Mario : Entity {
     if (controller.pressed("jump") || controller.pressed("spinjump")) velY += GRAVITY_HOLDA;
     else velY += GRAVITY;
     if (velY > TERMINAL_VELOCITY) velY = TERMINAL_VELOCITY;
+
+    ////
+    //Update hitbox
+    ////
+
+    if (ducking) {
+      height = HEIGHT_DUCKING;
+      if (!wasDucking) y += HEIGHT_NORMAL-HEIGHT_DUCKING;
+    }
+    else {
+      height = HEIGHT_NORMAL;
+      if (wasDucking) y -= HEIGHT_NORMAL-HEIGHT_DUCKING;
+    }
   }
   
   public override void draw() {
     int frameIndex = ((game.frame - animStart) % (chosenAnim.frames*chosenAnim.delay)) / chosenAnim.delay;
-    texture.render(x + chosenAnim.offsetX/16.0, 
-                   y + 1.0/16+chosenAnim.offsetY/16.0, 
+    texture.render(x + drawOffsetX/16.0 + chosenAnim.offsetX/16.0, 
+                   y + drawOffsetY/16.0 + chosenAnim.offsetY/16.0, 
                    intrect(chosenAnim.x + chosenAnim.width*frameIndex, chosenAnim.y, chosenAnim.width, chosenAnim.height),
                    !direction);
   }
@@ -164,7 +183,7 @@ class Mario : Entity {
   public override void drawShadow() {
     updateAnimation();
     int frameIndex = ((game.frame - animStart) % (chosenAnim.frames*chosenAnim.delay)) / chosenAnim.delay;
-    texture.renderShadow(x + chosenAnim.offsetX/16.0, y + 1.0/16+chosenAnim.offsetY/16.0, intrect(chosenAnim.x + chosenAnim.width*frameIndex, chosenAnim.y, chosenAnim.width, chosenAnim.height), !direction);
+    texture.renderShadow(x + drawOffsetX/16.0 + chosenAnim.offsetX/16.0, y + drawOffsetY/16.0 + chosenAnim.offsetY/16.0, intrect(chosenAnim.x + chosenAnim.width*frameIndex, chosenAnim.y, chosenAnim.width, chosenAnim.height), !direction);
   }
 
   struct animation {
@@ -178,7 +197,7 @@ class Mario : Entity {
   static animation LOOK_UP  = animation(64,  0,   16, 32, 1, 1);
   static animation WALKING  = animation(0,  0,   16, 32, 3, 6);
   static animation JOGGING  = animation(0,  0,   16, 32, 3, 3);
-  static animation DUCKING  = animation(0,  64,  16, 16, 1, 1, 0, 16);
+  static animation DUCKING  = animation(0,  64,  16, 16, 1, 1, 0, 5);
   static animation JUMPING  = animation(0,  32,  16, 32, 1, 1);
   static animation FALLING  = animation(16, 32,  16, 32, 1, 1);
   static animation RUNNING  = animation(0,  80,  32, 32, 5, 1, -8, 0);

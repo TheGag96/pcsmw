@@ -12,7 +12,7 @@ abstract class Entity {
   } 
 
   public float x = 0, y = 0, velX = 0, velY = 0, width, height;
-  public int drawWidth, drawHeight;
+  public int drawWidth, drawHeight, drawOffsetX, drawOffsetY;
   public Texture texture;
   public BlockedFlags blocked;
 
@@ -63,6 +63,7 @@ abstract class Entity {
 
     prevY = y;
     newY = y;
+
     newY += velY/60.0;
   }
 
@@ -136,7 +137,7 @@ abstract class Entity {
     //make some new bounds, essentially a longer rectangle in the y depending on how fast the entity is going that way
     //this way, entities aren't skipped over when they're going fast!
     rectangle collisionBounds = newY > y ? rectangle(x, y, width, newY-y+height)
-                                         : rectangle(newX, y, width, y-newY+height);
+                                         : rectangle(x, newY, width, y-newY+height);
 
     //if (!collidesWithBlocks) return;
 

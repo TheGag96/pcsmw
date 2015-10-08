@@ -49,9 +49,24 @@ void solidCollision(ref block b, Entity ent, Direction dir) {
     break;
 
     case Direction.BOTTOM:
-      ent.newY = b.bottom;
-      ent.blocked.up = true;
-      ent.velY = 0;
+      //give leeway to jump around the block 
+      if (ent.x+ent.width-b.left <= 0.375) {
+        block possibleBlock = util.getBlockAt(cast(int)b.bounds.x-1, cast(int)b.bounds.y);
+        if (possibleBlock.type == BlockType.EMPTY) {
+          ent.x = b.left-ent.width;
+        }
+      }
+      else if (b.right - ent.x <= 0.375) {
+        block possibleBlock = util.getBlockAt(cast(int)b.bounds.x+1, cast(int)b.bounds.y);
+        if (possibleBlock.type == BlockType.EMPTY) {
+          ent.x = b.right;
+        }
+      }
+      else {
+        ent.newY = b.bottom;
+        ent.blocked.up = true;
+        ent.velY = 0;
+      }
     break;
 
     default: break;

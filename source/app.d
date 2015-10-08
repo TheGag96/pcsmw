@@ -22,12 +22,12 @@ void main() {
   Mario mario = new Mario;
 
   Terrain t = new Terrain(1, 15, [
-    BitArray([1, 0, 1, 1, 1, 0]),
-    BitArray([1, 1, 1, 1, 1, 0]),
-    BitArray([0, 0, 1, 1, 1, 0]),
-    BitArray([0, 0, 1, 1, 1, 0]),
-    BitArray([0, 0, 0, 1, 1, 0]),
-    BitArray([0, 1, 1, 0, 0, 1]),
+    BitArray([1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]),
+    BitArray([1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1]),
+    BitArray([0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1]),
+    BitArray([0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1]),
+    BitArray([0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1]),
+    BitArray([1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1]),
   ]);
 
   game.tileobjs ~= t;
@@ -74,19 +74,19 @@ void main() {
 
     //Entity collision checks
     foreach (ent; game.entities) {
-      ent.updatePositionY;
-    }
-
-    foreach (ent; game.entities) {
       ent.updatePositionX;
     }
 
     foreach (ent; game.entities) {
-      ent.checkTerrainCollisionY;
+      ent.checkTerrainCollisionX;
     }
 
     foreach (ent; game.entities) {
-      ent.checkTerrainCollisionX;
+      ent.updatePositionY;
+    }
+
+    foreach (ent; game.entities) {
+      ent.checkTerrainCollisionY;
     }
 
     SDL_SetRenderTarget(RENDERER, SCREEN_TEX); 
@@ -95,13 +95,19 @@ void main() {
 
 
     //Draw shadows
-    t.drawShadow;
+    foreach (obj; game.tileobjs) {
+      obj.drawShadow;
+    }
+
+
     foreach (ent; game.entities) {
       ent.drawShadow;
     }
 
     //Terrain drawing
-    t.draw;
+    foreach (obj; game.tileobjs) {
+      obj.draw;
+    }
 
     //Entity drawing
     foreach (ent; game.entities) {
