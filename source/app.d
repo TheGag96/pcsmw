@@ -30,7 +30,7 @@ void main() {
     BitArray([1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1]),
   ]);
 
-  game.tileobjs ~= t;
+  util.addTileObjectToWorld(t);
 
   SDL_Event e;
   

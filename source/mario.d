@@ -194,7 +194,7 @@ class Mario : Entity {
   }
 
   static animation STANDING = animation(0,  0,   16, 32, 1, 1);
-  static animation LOOK_UP  = animation(64,  0,   16, 32, 1, 1);
+  static animation LOOK_UP  = animation(64, 0,   16, 32, 1, 1);
   static animation WALKING  = animation(0,  0,   16, 32, 3, 6);
   static animation JOGGING  = animation(0,  0,   16, 32, 3, 3);
   static animation DUCKING  = animation(0,  64,  16, 16, 1, 1, 0, 5);
@@ -202,8 +202,8 @@ class Mario : Entity {
   static animation FALLING  = animation(16, 32,  16, 32, 1, 1);
   static animation RUNNING  = animation(0,  80,  32, 32, 5, 1, -8, 0);
   static animation RUN_JUMP = animation(0,  112, 32, 32, 1, 1, -8, 0);
-  static animation TURNING  = animation(48, 0, 16, 32, 1, 1);
-  static animation SPINNING = animation(96, 0, 16, 32, 4, 3);
+  static animation TURNING  = animation(48, 0,   16, 32, 1, 1);
+  static animation SPINNING = animation(96, 0,   16, 32, 4, 3);
 
   animation* chosenAnim;
   int animStart = 0;

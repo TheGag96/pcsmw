@@ -81,11 +81,11 @@ class Terrain {
   this(int x, int y, in BitArray[] bits) {
     //tiles = [];
 
-    this.x = x*16;
-    this.y = y*16;
+    this.x = x;
+    this.y = y;
 
-    this.width = cast(int)(16*bits[0].length);
-    this.height = cast(int)(16*bits.length);
+    this.width = cast(int)bits[0].length;
+    this.height = cast(int)bits.length;
 
     foreach (row; 0..bits.length) {  
       foreach (col; 0..bits[0].length) { 
@@ -121,7 +121,7 @@ class Terrain {
   }
 
   public block getBlockAt(int x, int y) {
-    if ((cast(long)(y-this.y/16) << 32 | cast(long)(x-this.x/16)) in tiles) {
+    if ((cast(long)(y-this.y) << 32 | cast(long)(x-this.x)) in tiles) {
       return block(BlockType.SOLID, rectangle(x, y, 1, 1));
     }
     return block(BlockType.EMPTY, rectangle(0,0,0,0));
@@ -130,7 +130,7 @@ class Terrain {
   public void render() {
     uint pixelFormat;
     SDL_QueryTexture(tileset.texture, &pixelFormat, null, null, null);
-    bigTex = SDL_CreateTexture(RENDERER, pixelFormat, SDL_TEXTUREACCESS_TARGET, width, height);
+    bigTex = SDL_CreateTexture(RENDERER, pixelFormat, SDL_TEXTUREACCESS_TARGET, width*16, height*16);
     SDL_SetTextureBlendMode(bigTex, SDL_BLENDMODE_BLEND);
 
     SDL_SetRenderTarget(RENDERER, bigTex); 
@@ -148,7 +148,7 @@ class Terrain {
     //This is far, FAR faster. Thanks SO user gnidmoo    
     if (bigTex is null) render();
 
-    SDL_Rect renderQuad = {x, y, width, height};
+    SDL_Rect renderQuad = {x*16, y*16, width*16, height*16};
     SDL_SetTextureColorMod(bigTex, 255, 255, 255);
     SDL_SetTextureAlphaMod(bigTex, 255);
     
@@ -160,7 +160,7 @@ class Terrain {
     SDL_SetTextureColorMod(bigTex, 0, 0, 0);
     SDL_SetTextureAlphaMod(bigTex, 64);
 
-    SDL_Rect shadowQuad = {x+3, y+3, width, height};
+    SDL_Rect shadowQuad = {x*16+3, y*16+3, width*16, height*16};
     SDL_RenderCopy(RENDERER, bigTex, null, &shadowQuad);
     
   }
