@@ -32,6 +32,8 @@ struct block {
   }
 }
 
+enum SOLID_BLOCK_LEEWAY = 0.375;
+
 void solidCollision(ref block b, Entity ent, Direction dir) {
   switch (dir) {
     case Direction.LEFT:
@@ -54,13 +56,13 @@ void solidCollision(ref block b, Entity ent, Direction dir) {
 
     case Direction.BOTTOM:
       //give leeway to jump around the block 
-      if (ent.x+ent.width-b.left <= 0.375) {
+      if (ent.x+ent.width-b.left <= SOLID_BLOCK_LEEWAY) {
         block possibleBlock = util.getBlockAt(cast(int)b.bounds.x-1, cast(int)b.bounds.y);
         if (possibleBlock.type == BlockType.EMPTY) {
           ent.x = b.left-ent.width;
         }
       }
-      else if (b.right - ent.x <= 0.375) {
+      else if (b.right - ent.x <= SOLID_BLOCK_LEEWAY) {
         block possibleBlock = util.getBlockAt(cast(int)b.bounds.x+1, cast(int)b.bounds.y);
         if (possibleBlock.type == BlockType.EMPTY) {
           ent.x = b.right;

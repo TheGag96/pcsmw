@@ -175,13 +175,39 @@ class Mario : Entity {
 
       if (wasDucking) {
         y -= HEIGHT_NORMAL-HEIGHT_DUCKING;
+
         //Mario can't stand up if there's a block directly above him
-        if (util.getBlockAt(cast(int)(x), cast(int)(y)).collidesWith(this) ||
-            util.getBlockAt(cast(int)(x+width), cast(int)(y)).collidesWith(this)) {
+        //WARNING: This is pretty messy. I may need to clean it up sometime.
+
+        bool leftBlock = util.getBlockAt(cast(int)(x), cast(int)(y)).collidesWith(this);
+        bool rightBlock = util.getBlockAt(cast(int)(x+width), cast(int)(y)).collidesWith(this);
+        if (leftBlock && rightBlock) {
           height = HEIGHT_DUCKING;
           y += HEIGHT_NORMAL-HEIGHT_DUCKING;
           ducking = true;
           spinjumping = false;
+        }
+        else if (leftBlock && !rightBlock) {
+          if (ceil(x)-x <= blocks.SOLID_BLOCK_LEEWAY) {
+            x = floor(x)+1;
+          }
+          else {
+            height = HEIGHT_DUCKING;
+            y += HEIGHT_NORMAL-HEIGHT_DUCKING;
+            ducking = true;
+            spinjumping = false;
+          }
+        }
+        else if (!leftBlock && rightBlock) {
+          if (x+width - floor(x+width) <= blocks.SOLID_BLOCK_LEEWAY) {
+            x = floor(x+width)-width;
+          }
+          else {
+            height = HEIGHT_DUCKING;
+            y += HEIGHT_NORMAL-HEIGHT_DUCKING;
+            ducking = true;
+            spinjumping = false;
+          }
         }
       }
     }
