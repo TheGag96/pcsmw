@@ -1,5 +1,5 @@
 import texture, blocks, util;
-import std.bitmanip, std.typecons, std.math, std.stdio;
+import std.bitmanip, std.typecons, std.math, std.stdio, std.algorithm;
 
 abstract class Entity {
   struct BlockedFlags {
@@ -15,6 +15,7 @@ abstract class Entity {
   public int drawWidth, drawHeight, drawOffsetX, drawOffsetY;
   public Texture texture;
   public BlockedFlags blocked;
+  public long[] occupiedSectors= [];
 
   public this() {
     
@@ -33,7 +34,9 @@ abstract class Entity {
     texture.renderShadow(cast(int)x, cast(int)y);
   }
 
-  public void onBlockCollision(Direction dir, block b) { }
+  public void onBlockCollision(block b, Direction dir) { }
+  public void onEntityColliding(Entity other, Direction dir) { }
+  public void onCollisionWithEntity(Entity other, Direction dir) { }
 
   ////
   //Begin collision code
@@ -67,7 +70,7 @@ abstract class Entity {
     newY += velY/60.0;
   }
 
-  public void checkTerrainCollisionX() {
+  public void checkTerrainCollisionsX() {
     //make some new bounds, essentially a longer rectangle in the y depending on how fast the entity is going that way
     //this way, entities aren't skipped over when they're going fast!
     rectangle collisionBounds = newX > x ? rectangle(x, y, newX-x+width, height)
@@ -117,11 +120,11 @@ abstract class Entity {
         if (currentBlock.type != BlockType.EMPTY && collisionBounds.intersects(currentBlock.bounds)){
           if (xDirection == 1) {
             currentBlock.performCollision(this, Direction.LEFT);
-            onBlockCollision(Direction.RIGHT, currentBlock);
+            onBlockCollision(currentBlock, Direction.RIGHT);
           }
           else {
             currentBlock.performCollision(this, Direction.RIGHT);
-            onBlockCollision(Direction.LEFT, currentBlock);
+            onBlockCollision(currentBlock, Direction.LEFT);
           }
         }
 
@@ -133,7 +136,7 @@ abstract class Entity {
     x = newX;
   }
 
-  public void checkTerrainCollisionY() {
+  public void checkTerrainCollisionsY() {
     //make some new bounds, essentially a longer rectangle in the y depending on how fast the entity is going that way
     //this way, entities aren't skipped over when they're going fast!
     rectangle collisionBounds = newY > y ? rectangle(x, y, width, newY-y+height)
@@ -183,17 +186,61 @@ abstract class Entity {
         if (currentBlock.type != BlockType.EMPTY && collisionBounds.intersects(currentBlock.bounds)){
           if (yDirection == -1) {
             currentBlock.performCollision(this, Direction.BOTTOM);
-            onBlockCollision(Direction.TOP, currentBlock);
+            onBlockCollision(currentBlock, Direction.TOP);
           }
           else {
             currentBlock.performCollision(this, Direction.TOP);
-            onBlockCollision(Direction.BOTTOM, currentBlock);
+            onBlockCollision(currentBlock, Direction.BOTTOM);
           }
         }
 
       }
       if (newY != l)                  //if the entity's position after colliding is different from before colliding, there's no need to check anymore
           break;
+    }
+
+    y = newY;
+  }
+
+  public void checkEntityCollisionsX() {
+    Entity[] checkedEntities = [];
+
+    foreach (sector; occupiedSectors) {
+      foreach (ent; game.entitySectors[sector]) {
+        if (ent !is this && !checkedEntities.canFind(ent) && boundingRectangle.intersects(ent.boundingRectangle)) {
+          checkedEntities ~= ent;
+          if (velX - ent.velX < 0) {
+            onCollisionWithEntity(ent, Direction.LEFT);
+            ent.onEntityColliding(ent, Direction.RIGHT);
+          }
+          else {
+            onCollisionWithEntity(ent, Direction.RIGHT);
+            ent.onEntityColliding(ent, Direction.LEFT);
+          }
+        }
+      }
+    }
+
+    x = newX;
+  }
+
+  public void checkEntityCollisionsY() {
+    Entity[] checkedEntities = [];
+
+    foreach (sector; occupiedSectors) {
+      foreach (ent; game.entitySectors[sector]) {
+        if (ent !is this && !checkedEntities.canFind(ent) && boundingRectangle.intersects(ent.boundingRectangle)) {
+          checkedEntities ~= ent;
+          if (velY - ent.velY < 0) {
+            onCollisionWithEntity(ent, Direction.BOTTOM);
+            ent.onEntityColliding(ent, Direction.TOP);
+          }
+          else {
+            onCollisionWithEntity(ent, Direction.TOP);
+            ent.onEntityColliding(ent, Direction.BOTTOM);
+          }
+        }
+      }
     }
 
     y = newY;

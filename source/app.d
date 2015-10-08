@@ -19,18 +19,19 @@ void main() {
   //Initialize, and quit if it fails
   if (!init()) return;
 
-  Mario mario = new Mario;
-
-  Terrain t = new Terrain(1, 15, [
-    BitArray([1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]),
-    BitArray([1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1]),
+  Terrain t = new Terrain(5, 13, [
+    BitArray([1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0]),
+    BitArray([1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0]),
     BitArray([0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1]),
-    BitArray([0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1]),
+    BitArray([0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1]),
     BitArray([0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1]),
     BitArray([1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1]),
   ]);
 
+  Terrain t2 = new Terrain(0, 20, [ BitArray([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])]);
+
   util.addTileObjectToWorld(t);
+  util.addTileObjectToWorld(t2);
 
   SDL_Event e;
   
@@ -78,7 +79,12 @@ void main() {
     }
 
     foreach (ent; game.entities) {
-      ent.checkTerrainCollisionX;
+      ent.checkTerrainCollisionsX;
+    }
+
+    util.buildEntitySectors;
+    foreach (ent; game.entities) {
+      ent.checkEntityCollisionsX;
     }
 
     foreach (ent; game.entities) {
@@ -86,7 +92,12 @@ void main() {
     }
 
     foreach (ent; game.entities) {
-      ent.checkTerrainCollisionY;
+      ent.checkTerrainCollisionsY;
+    }
+
+    util.buildEntitySectors;
+    foreach (ent; game.entities) {
+      ent.checkEntityCollisionsY;
     }
 
     SDL_SetRenderTarget(RENDERER, SCREEN_TEX); 
@@ -181,7 +192,8 @@ bool init() {
 
   //Initialize a few game objects
   controller = new Controller;
-  game.entities ~= new Mario;
+  game.entities ~= new Mario(0,0);
+  //game.entities ~= new Mario(3,0);
   Terrain.init();
 
   return true;

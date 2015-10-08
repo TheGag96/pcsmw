@@ -58,6 +58,7 @@ void solidCollision(ref block b, Entity ent, Direction dir) {
       //give leeway to jump around the block 
       if (ent.x+ent.width-b.left <= SOLID_BLOCK_LEEWAY) {
         block possibleBlock = util.getBlockAt(cast(int)b.bounds.x-1, cast(int)b.bounds.y);
+        block belowBlock = util.getBlockAt(cast(int)b.bounds.x, cast(int)b.bounds.y+1);
         if (possibleBlock.type == BlockType.EMPTY) {
           ent.x = b.left-ent.width;
         }

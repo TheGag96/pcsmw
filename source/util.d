@@ -43,9 +43,11 @@ block getBlockAt(int x, int y) {
   return block(BlockType.EMPTY, rectangle(0,0,0,0));
 }
 
+enum SECTOR_SIZE = 16;
+
 void addTileObjectToWorld(Terrain t) {
-  long startSectorX = t.x/16, startSectorY = t.y/16;
-  long endSectorX = (t.x+t.width)/16, endSectorY = (t.y+t.height)/16;
+  long startSectorX = t.x/SECTOR_SIZE,         startSectorY = t.y/SECTOR_SIZE;
+  long endSectorX = (t.x+t.width)/SECTOR_SIZE, endSectorY = (t.y+t.height)/SECTOR_SIZE;
 
   foreach (i; startSectorX..endSectorX+1) {
     foreach (j; startSectorY..endSectorY+1) {
@@ -60,4 +62,30 @@ void addTileObjectToWorld(Terrain t) {
   }
 
   game.tileobjs ~= t;
+}
+
+void buildEntitySectors() {
+  foreach (list; game.entitySectors.byValue) {
+    list.length = 0;
+  }
+
+  foreach (ent; game.entities) {
+    ent.occupiedSectors.length = 0;
+
+    long startSectorX = cast(long)ent.x/SECTOR_SIZE,           startSectorY = cast(long)ent.y/SECTOR_SIZE;
+    long endSectorX = cast(long)(ent.x+ent.width)/SECTOR_SIZE, endSectorY = cast(long)(ent.y+ent.height)/SECTOR_SIZE;
+
+    foreach (i; startSectorX..endSectorX+1) {
+      foreach (j; startSectorY..endSectorY+1) {
+        long sectorIndex = j << 32 | i;
+        ent.occupiedSectors ~= sectorIndex;
+        if (sectorIndex !in game.entitySectors) {
+          game.entitySectors[sectorIndex] = [ent];
+        } 
+        else {
+          game.entitySectors[sectorIndex] ~= ent;
+        }
+      }
+    }
+  }
 }

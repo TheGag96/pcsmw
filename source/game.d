@@ -5,6 +5,7 @@ public Entity[] entities;
 public Terrain[] tileobjs;
 
 Terrain[][long] sectors;
+Entity[][long] entitySectors;
 
 public int[string] variables;
 
