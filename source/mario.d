@@ -1,13 +1,21 @@
-import entity, texture, input, app;
-import std.stdio, std.algorithm, std.math;
+import entity, texture, input, app, blocks;
+import std.stdio, std.algorithm, std.math, std.bitmanip;
 
 class Mario : Entity {
   int state = 0;
   static Texture marioTexture = null;
 
-  bool jumping = false, spinjumping = false, runJumping = false;
-  bool ducking = false;
-  bool direction = false; //false for left, right for true
+  //various flags
+  mixin(bitfields!(
+      bool, "jumping", 1,
+      bool, "spinjumping", 1,
+      bool, "runJumping", 1,
+      bool, "ducking", 1,
+      bool, "direction", 1,   //fals for left, right for true
+      bool, "spinDir", 1,
+      bool, "wasDucking", 1,
+      int, "", 1)
+  );
 
 
   public this() {
@@ -47,13 +55,9 @@ class Mario : Entity {
 
   int runTimer = 0;
   static immutable int RUN_TIMER_MAX = 56;
-  
-  bool spinDir;
 
   static immutable float HEIGHT_NORMAL = 25.0/16;
   static immutable float HEIGHT_DUCKING = 14.0/16;
-
-  bool wasDucking = false;
 
   public override void logic() {
     ////
@@ -168,7 +172,18 @@ class Mario : Entity {
     }
     else {
       height = HEIGHT_NORMAL;
-      if (wasDucking) y -= HEIGHT_NORMAL-HEIGHT_DUCKING;
+
+      if (wasDucking) {
+        y -= HEIGHT_NORMAL-HEIGHT_DUCKING;
+        //Mario can't stand up if there's a block directly above him
+        if (util.getBlockAt(cast(int)(x), cast(int)(y)).collidesWith(this) ||
+            util.getBlockAt(cast(int)(x+width), cast(int)(y)).collidesWith(this)) {
+          height = HEIGHT_DUCKING;
+          y += HEIGHT_NORMAL-HEIGHT_DUCKING;
+          ducking = true;
+          spinjumping = false;
+        }
+      }
     }
   }
   

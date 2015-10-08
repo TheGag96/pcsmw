@@ -26,6 +26,10 @@ struct block {
     void function(ref block, Entity, Direction) func = collisionFuncs[type];
     if (func !is null) func(this, ent, dir);
   }
+
+  bool collidesWith(Entity ent) {
+    return type != BlockType.EMPTY && bounds.intersects(rectangle(ent.x, ent.y, ent.width, ent.height)); //from util
+  }
 }
 
 void solidCollision(ref block b, Entity ent, Direction dir) {
