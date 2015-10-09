@@ -1,6 +1,6 @@
 import std.stdio, std.algorithm, std.string, std.conv, std.bitmanip, core.memory;
 import derelict.sdl2.sdl, derelict.sdl2.image, derelict.sdl2.mixer, derelict.sdl2.ttf;
-import texture, entity, mario, input, game, terrain;
+import texture, entity, mario, input, game, terrain, util;
 
 public int SCREEN_WIDTH = 1280;
 public int SCREEN_HEIGHT = 720;
@@ -20,15 +20,15 @@ void main() {
   if (!init()) return;
 
   Terrain t = new Terrain(5, 13, [
-    BitArray([1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0]),
-    BitArray([1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0]),
-    BitArray([0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1]),
-    BitArray([0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1]),
-    BitArray([0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1]),
-    BitArray([1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1]),
+    bitArray([1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0]),
+    bitArray([1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0]),
+    bitArray([0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1]),
+    bitArray([0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1]),
+    bitArray([0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1]),
+    bitArray([1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1]),
   ]);
 
-  Terrain t2 = new Terrain(0, 20, [ BitArray([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])]);
+  Terrain t2 = new Terrain(0, 20, [ bitArray([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])]);
 
   util.addTileObjectToWorld(t);
   util.addTileObjectToWorld(t2);

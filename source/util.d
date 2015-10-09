@@ -1,4 +1,4 @@
-import std.typecons, std.stdio;
+import std.typecons, std.stdio, std.bitmanip;
 import game, blocks, terrain, texture;
 
 alias rectangle = Tuple!(float, "x", float, "y", float, "width", float, "height");
@@ -88,4 +88,19 @@ void buildEntitySectors() {
       }
     }
   }
+}
+
+
+//Needed until GDC gets updated. Thanks, John Colvin.
+
+auto bitArray(bool[] ba) {
+    BitArray tmp;
+    tmp.init(ba);
+    return tmp;
+}
+
+auto bitArray(void[] v, size_t numbits) {
+    BitArray tmp;
+    tmp.init(v, numbits);
+    return tmp;
 }
