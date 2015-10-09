@@ -15,10 +15,26 @@ abstract class Entity {
   public int drawWidth, drawHeight, drawOffsetX, drawOffsetY;
   public Texture texture;
   public BlockedFlags blocked;
+  public bool direction;   //false for left, right for true
+  public bool flipY;
+
   public long[] occupiedSectors= [];
 
-  public this() {
-    
+  struct animation {
+    int x, y, width, height;
+    int frames;
+    int delay;
+    int offsetX = 0, offsetY = 0;
+  }
+
+  public animation* chosenAnim;
+  public int animStart = 0;
+
+  static immutable float GRAVITY_NORMAL = 6.0 /16*60/16;
+
+  public this(float x, float y) {
+    this.x = x; 
+    this.y = y;
   }
   
   
@@ -27,12 +43,24 @@ abstract class Entity {
   
   ///Called once per frame, after logic checks. Draw graphics in this method.
   public void draw() {
-    texture.render(cast(int)x, cast(int)y);
+    if (chosenAnim is null) return;
+    int frameIndex = ((game.frame - animStart) % (chosenAnim.frames*chosenAnim.delay)) / chosenAnim.delay;
+    texture.render(x + drawOffsetX/16.0 + chosenAnim.offsetX/16.0, 
+                   y + drawOffsetY/16.0 + chosenAnim.offsetY/16.0, 
+                   intrect(chosenAnim.x + chosenAnim.width*frameIndex, chosenAnim.y, chosenAnim.width, chosenAnim.height),
+                   !direction, flipY);
   }
 
   public void drawShadow() {
-    texture.renderShadow(cast(int)x, cast(int)y);
+    if (chosenAnim is null) return;
+    int frameIndex = ((game.frame - animStart) % (chosenAnim.frames*chosenAnim.delay)) / chosenAnim.delay;
+    texture.renderShadow(x + drawOffsetX/16.0 + chosenAnim.offsetX/16.0, 
+                         y + drawOffsetY/16.0 + chosenAnim.offsetY/16.0, 
+                         intrect(chosenAnim.x + chosenAnim.width*frameIndex, chosenAnim.y, chosenAnim.width, chosenAnim.height),
+                         !direction, flipY);
   }
+
+  public void updateAnimation() { }
 
   public void onBlockCollision(block b, Direction dir) { }
   public void onEntityColliding(Entity other, Direction dir) { }
@@ -47,8 +75,6 @@ abstract class Entity {
   int xDirection = 0; //-1 = left, 0 = not moving, 1 = right
   int yDirection = 0; //1 = down, 0 = not moving, -1 = up
 
-  alias rectangle = Tuple!(float, "x", float, "y", float, "width", float, "height");
-  
   public void updatePositionX() {
     blocked.right = false;
     blocked.left = false;
@@ -211,11 +237,11 @@ abstract class Entity {
           checkedEntities ~= ent;
           if (velX - ent.velX < 0) {
             onCollisionWithEntity(ent, Direction.LEFT);
-            ent.onEntityColliding(ent, Direction.RIGHT);
+            ent.onEntityColliding(this, Direction.RIGHT);
           }
           else {
             onCollisionWithEntity(ent, Direction.RIGHT);
-            ent.onEntityColliding(ent, Direction.LEFT);
+            ent.onEntityColliding(this, Direction.LEFT);
           }
         }
       }
@@ -232,12 +258,12 @@ abstract class Entity {
         if (ent !is this && !checkedEntities.canFind(ent) && boundingRectangle.intersects(ent.boundingRectangle)) {
           checkedEntities ~= ent;
           if (velY - ent.velY < 0) {
-            onCollisionWithEntity(ent, Direction.BOTTOM);
-            ent.onEntityColliding(ent, Direction.TOP);
+            onCollisionWithEntity(ent, Direction.TOP);
+            ent.onEntityColliding(this, Direction.BOTTOM);
           }
           else {
-            onCollisionWithEntity(ent, Direction.TOP);
-            ent.onEntityColliding(ent, Direction.BOTTOM);
+            onCollisionWithEntity(ent, Direction.BOTTOM);
+            ent.onEntityColliding(this, Direction.TOP);
           }
         }
       }

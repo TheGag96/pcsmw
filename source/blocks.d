@@ -6,10 +6,6 @@ enum BlockType {
   SOLID
 }
 
-enum Direction {
-  LEFT, RIGHT, TOP, BOTTOM
-}
-
 void function(ref block, Entity, Direction)[] collisionFuncs = [null, &solidCollision];
 
 struct block {

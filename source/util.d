@@ -5,10 +5,18 @@ alias rectangle = Tuple!(float, "x", float, "y", float, "width", float, "height"
 
 private Texture[string] textures;
 
+enum Direction {
+  LEFT, RIGHT, TOP, BOTTOM
+}
 
 ////
 //Helpful functions
 ////
+
+//instanceof wrapper, thanks Adam D. Ruppe
+T instanceof(T)(Object o) if (is(T == class)) {
+  return cast(T) o;
+}
 
 Texture getTexture(string name) {
   Texture* ptr = name in textures;

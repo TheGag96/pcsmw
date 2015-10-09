@@ -19,14 +19,13 @@ class Mario : Entity {
 
 
   public this(float x, float y) {
+    super(x, y);
+
     texture = util.getTexture("mario_big");
     if (texture is null) {
       texture = util.registerTexture("mario_big", new Texture("data/mario.png"));
     }
 
-    //if (marioTexture is null) marioTexture = new Texture("data/mario.png");
-    //texture = marioTexture;
-    this.x = x; this.y = y;
     velX = 0; velY = 0;
     drawWidth = 16; drawHeight = 32;
     drawOffsetX = -2, drawOffsetY = 1 - 7;
@@ -36,8 +35,8 @@ class Mario : Entity {
 
   //SMW velocities are in pixels per 16 frames; must convert each to blocks per second
   
-  static immutable float GRAVITY       = 6.0 /16*60/16;
-  static immutable float GRAVITY_HOLDA = 3.0 /16*60/16;
+  static immutable float GRAVITY_NORMAL = 6.0 /16*60/16;
+  static immutable float GRAVITY_HOLDA  = 3.0 /16*60/16;
 
   static immutable float JUMPVEL_WALK = -80.0 /16*60/16;
   static immutable float JUMPVEL_JOG  = -90.0 /16*60/16;
@@ -160,11 +159,11 @@ class Mario : Entity {
     }
 
     ////
-    //Gravity (amount applied depends on whether or not player is holding a jump button)
+    //GRAVITY_NORMAL (amount applied depends on whether or not player is holding a jump button)
     ////
 
     if (controller.pressed("jump") || controller.pressed("spinjump")) velY += GRAVITY_HOLDA;
-    else velY += GRAVITY;
+    else velY += GRAVITY_NORMAL;
     if (velY > TERMINAL_VELOCITY) velY = TERMINAL_VELOCITY;
 
     ////
@@ -232,13 +231,6 @@ class Mario : Entity {
     texture.renderShadow(x + drawOffsetX/16.0 + chosenAnim.offsetX/16.0, y + drawOffsetY/16.0 + chosenAnim.offsetY/16.0, intrect(chosenAnim.x + chosenAnim.width*frameIndex, chosenAnim.y, chosenAnim.width, chosenAnim.height), !direction);
   }
 
-  struct animation {
-    int x, y, width, height;
-    int frames;
-    int delay;
-    int offsetX = 0, offsetY = 0;
-  }
-
   static animation STANDING = animation(0,  0,   16, 32, 1, 1);
   static animation LOOK_UP  = animation(64, 0,   16, 32, 1, 1);
   static animation WALKING  = animation(0,  0,   16, 32, 3, 6);
@@ -251,10 +243,9 @@ class Mario : Entity {
   static animation TURNING  = animation(48, 0,   16, 32, 1, 1);
   static animation SPINNING = animation(96, 0,   16, 32, 4, 3);
 
-  animation* chosenAnim;
-  int animStart = 0;
+  //TODO: add animations for small mario
 
-  public void updateAnimation() {
+  public override void updateAnimation() {
     animation* prev = chosenAnim;
     if (state == 0) {
       if (ducking) {
