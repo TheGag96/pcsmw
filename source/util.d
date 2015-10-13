@@ -1,5 +1,5 @@
 import std.typecons, std.stdio, std.bitmanip;
-import game, blocks, terrain, texture;
+import game, blocks, terrain, texture, sound;
 
 alias rectangle = Tuple!(float, "x", float, "y", float, "width", float, "height");
 
@@ -20,6 +20,25 @@ Texture registerTexture(string name, Texture tex) {
     textures[name] = tex;
   }
   return tex;
+}
+
+Sound getSound(string name) {
+  Sound* ptr = name in sounds;
+  return ptr is null ? null : *ptr;
+}
+
+Sound registerSound(string name, Sound tex) {
+  if (name !in sounds) {
+    sounds[name] = tex;
+  }
+  return tex;
+}
+
+void playSound(string name) {
+  Sound* ptr = name in sounds;
+  if (ptr !is null) {
+    (*ptr).play;
+  }
 }
 
 bool intersects(rectangle r, rectangle other) {

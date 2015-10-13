@@ -1,4 +1,4 @@
-import entity, texture, input, app, blocks;
+import entity, texture, input, app, blocks, sound, util;
 import std.stdio, std.algorithm, std.math, std.bitmanip;
 
 class Mario : Entity {
@@ -22,6 +22,18 @@ class Mario : Entity {
     texture = util.getTexture("mario_big");
     if (texture is null) {
       texture = util.registerTexture("mario_big", new Texture("data/mario.png"));
+    }
+
+    if (util.getSound("jump") is null) {
+      util.registerSound("jump", new Sound("data/sfx/jump.wav"));
+    }
+
+    if (util.getSound("spin") is null) {
+      util.registerSound("spin", new Sound("data/sfx/spin.wav"));
+    }
+
+    if (util.getSound("kick") is null) {
+      util.registerSound("kick", new Sound("data/sfx/kick.wav"));
     }
 
     //if (marioTexture is null) marioTexture = new Texture("data/mario.png");
@@ -131,12 +143,15 @@ class Mario : Entity {
       if (controller.pressedOneFrame("jump")) {
         jumpCoeff = 1;
         jumping = true;
+        spinjumping = false;
         if (abs(velX) >= MAX_RUN) runJumping = true;
+        util.playSound("jump");
       }
       else if (controller.pressedOneFrame("spinjump")) {
         jumpCoeff = SPINJUMP_COEFF;
         jumping = true;
         spinjumping = true;
+        util.playSound("spin");
       }
 
       if (jumpCoeff != 0) {

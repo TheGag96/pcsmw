@@ -189,6 +189,11 @@ bool init() {
 
   SCREEN_TEX = SDL_CreateTexture(RENDERER, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, SCREEN_WIDTH, SCREEN_HEIGHT);
   
+  if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) == -1) {
+    writeln("Mix_OpenAudio failed");
+    return false;
+  }
+
 
   //Initialize a few game objects
   controller = new Controller;
