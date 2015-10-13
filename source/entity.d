@@ -1,6 +1,8 @@
 import texture, blocks, util;
 import std.bitmanip, std.typecons, std.math, std.stdio, std.algorithm;
 
+alias Remove = Flag!"removeFlag";
+
 abstract class Entity {
   struct BlockedFlags {
     mixin(bitfields!(
@@ -18,24 +20,27 @@ abstract class Entity {
   public bool direction;   //false for left, right for true
   public bool flipY;
 
+  public bool removeFlag = false;
+
+
   public long[] occupiedSectors= [];
 
   struct animation {
     int x, y, width, height;
     int frames;
-    int delay;
+    float delay;
     int offsetX = 0, offsetY = 0;
 
-    int getFrame(int startFrame = 0) {
-      return ((game.frame - startFrame) % (frames*delay)) / delay;
+    int getFrame(float startTime = 0) {
+      return cast(int)( ((game.totalTime - startTime) % (frames*delay)) / delay );
     }
   }
 
   public animation* chosenAnim;
-  public int animStart = 0;
+  public float animStart = 0;
 
   static immutable float GRAVITY_NORMAL = 6.0 /16*60/16;
-
+ 
   public this(float x, float y) {
     this.x = x; 
     this.y = y;
@@ -48,7 +53,7 @@ abstract class Entity {
   ///Called once per frame, after logic checks. Draw graphics in this method.
   public void draw() {
     if (chosenAnim is null) return;
-    int frameIndex = ((game.frame - animStart) % (chosenAnim.frames*chosenAnim.delay)) / chosenAnim.delay;
+    int frameIndex = chosenAnim.getFrame(animStart);
     texture.render(x + drawOffsetX/16.0 + chosenAnim.offsetX/16.0, 
                    y + drawOffsetY/16.0 + chosenAnim.offsetY/16.0, 
                    intrect(chosenAnim.x + chosenAnim.width*frameIndex, chosenAnim.y, chosenAnim.width, chosenAnim.height),
@@ -57,7 +62,7 @@ abstract class Entity {
 
   public void drawShadow() {
     if (chosenAnim is null) return;
-    int frameIndex = ((game.frame - animStart) % (chosenAnim.frames*chosenAnim.delay)) / chosenAnim.delay;
+    int frameIndex = chosenAnim.getFrame(animStart);
     texture.renderShadow(x + drawOffsetX/16.0 + chosenAnim.offsetX/16.0, 
                          y + drawOffsetY/16.0 + chosenAnim.offsetY/16.0, 
                          intrect(chosenAnim.x + chosenAnim.width*frameIndex, chosenAnim.y, chosenAnim.width, chosenAnim.height),
@@ -74,10 +79,10 @@ abstract class Entity {
   //To account for higher/lower framerates, a ratio of that acceleration must be used to ensure
   //the Entity goes at right real speed.
   public void applyAccelerationX(float accel) {
-    velX += accel*game.deltaTime/(1.0/60);
+    velX += accel*game.deltaTime*60;
   }
   public void applyAccelerationY(float accel) {
-    velY+= accel*game.deltaTime/(1.0/60);
+    velY += accel*game.deltaTime*60;
   }
 
   ////
@@ -96,7 +101,7 @@ abstract class Entity {
     prevX = x;
     newX = x;
 
-    newX += velX/60.0;
+    newX += velX*game.deltaTime;
 
   }
 
@@ -107,7 +112,7 @@ abstract class Entity {
     prevY = y;
     newY = y;
 
-    newY += velY/60.0;
+    newY += velY*game.deltaTime;
   }
 
   public void checkTerrainCollisionsX() {

@@ -69,8 +69,8 @@ class Mario : Entity {
   
   static immutable float TERMINAL_VELOCITY = 70.0 /16*60/16;
 
-  int runTimer = 0;
-  static immutable int RUN_TIMER_MAX = 56;
+  float runTimer = 0;
+  static immutable float RUN_TIMER_MAX = 56.0 / 60;
 
   static immutable float HEIGHT_NORMAL = 25.0/16;
   static immutable float HEIGHT_DUCKING = 14.0/16;
@@ -119,10 +119,12 @@ class Mario : Entity {
     }
 
     if (controller.pressed("run") && abs(velX) >= MAX_JOG && !ducking) {
-      if (runTimer < RUN_TIMER_MAX) runTimer++;
+      if (runTimer < RUN_TIMER_MAX) runTimer += game.deltaTime;
+      else runTimer = RUN_TIMER_MAX;
     }
     else {
-      if (runTimer > 0 && (blocked.down || !jumping)) runTimer--;
+      if (runTimer > 0 && (blocked.down || !jumping)) runTimer -= game.deltaTime;
+      else runTimer = 0;
     }
 
     if (spinjumping) {
@@ -233,7 +235,7 @@ class Mario : Entity {
   }
   
   public override void draw() {
-    int frameIndex = ((game.frame - animStart) % (chosenAnim.frames*chosenAnim.delay)) / chosenAnim.delay;
+    int frameIndex = chosenAnim.getFrame(animStart);
     texture.render(x + drawOffsetX/16.0 + chosenAnim.offsetX/16.0, 
                    y + drawOffsetY/16.0 + chosenAnim.offsetY/16.0, 
                    intrect(chosenAnim.x + chosenAnim.width*frameIndex, chosenAnim.y, chosenAnim.width, chosenAnim.height),
@@ -242,21 +244,20 @@ class Mario : Entity {
 
   public override void drawShadow() {
     updateAnimation();
-    int frameIndex = ((game.frame - animStart) % (chosenAnim.frames*chosenAnim.delay)) / chosenAnim.delay;
-    texture.renderShadow(x + drawOffsetX/16.0 + chosenAnim.offsetX/16.0, y + drawOffsetY/16.0 + chosenAnim.offsetY/16.0, intrect(chosenAnim.x + chosenAnim.width*frameIndex, chosenAnim.y, chosenAnim.width, chosenAnim.height), !direction);
+    super.drawShadow;
   }
 
-  static animation STANDING = animation(0,  0,   16, 32, 1, 1);
-  static animation LOOK_UP  = animation(64, 0,   16, 32, 1, 1);
-  static animation WALKING  = animation(0,  0,   16, 32, 3, 6);
-  static animation JOGGING  = animation(0,  0,   16, 32, 3, 3);
-  static animation DUCKING  = animation(0,  64,  16, 16, 1, 1, 0, 5);
-  static animation JUMPING  = animation(0,  32,  16, 32, 1, 1);
-  static animation FALLING  = animation(16, 32,  16, 32, 1, 1);
-  static animation RUNNING  = animation(0,  80,  32, 32, 5, 1, -8, 0);
-  static animation RUN_JUMP = animation(0,  112, 32, 32, 1, 1, -8, 0);
-  static animation TURNING  = animation(48, 0,   16, 32, 1, 1);
-  static animation SPINNING = animation(96, 0,   16, 32, 4, 3);
+  static animation STANDING = animation(0,  0,   16, 32, 1, 1.0/60);
+  static animation LOOK_UP  = animation(64, 0,   16, 32, 1, 1.0/60);
+  static animation WALKING  = animation(0,  0,   16, 32, 3, 6.0/60);
+  static animation JOGGING  = animation(0,  0,   16, 32, 3, 3.0/60);
+  static animation DUCKING  = animation(0,  64,  16, 16, 1, 1.0/60, 0, 5);
+  static animation JUMPING  = animation(0,  32,  16, 32, 1, 1.0/60);
+  static animation FALLING  = animation(16, 32,  16, 32, 1, 1.0/60);
+  static animation RUNNING  = animation(0,  80,  32, 32, 5, 1.0/60, -8, 0);
+  static animation RUN_JUMP = animation(0,  112, 32, 32, 1, 1.0/60, -8, 0);
+  static animation TURNING  = animation(48, 0,   16, 32, 1, 1.0/60);
+  static animation SPINNING = animation(96, 0,   16, 32, 4, 3.0/60);
 
   //TODO: add animations for small mario
 
@@ -318,7 +319,7 @@ class Mario : Entity {
     }
     
     if (prev != chosenAnim) {
-      animStart = game.frame;
+      animStart = game.totalTime;
     }
   }
 }

@@ -3,10 +3,11 @@ import std.stdio;
 
 enum BlockType {
   EMPTY,
-  SOLID
+  SOLID,
+  CLOUD
 }
 
-void function(ref block, Entity, Direction)[] collisionFuncs = [null, &solidCollision];
+void function(ref block, Entity, Direction)[] collisionFuncs = [null, &solidCollision, &cloudCollision];
 
 struct block {
   BlockType type;
@@ -73,6 +74,16 @@ void solidCollision(ref block b, Entity ent, Direction dir) {
     break;
 
     default: break;
+  }
+}
+
+void cloudCollision(ref block b, Entity ent, Direction dir) {
+  if (dir == Direction.TOP) {
+    if (ent.prevY+ent.height <= b.bounds.y) {
+      ent.newY = b.top-ent.height;
+      ent.blocked.down = true;
+      ent.velY = 0;
+    }
   }
 }
 

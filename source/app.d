@@ -1,4 +1,4 @@
-import std.stdio, std.algorithm, std.string, std.conv, std.bitmanip, core.memory;
+import std.stdio, std.algorithm, std.string, std.conv, std.bitmanip, std.array, std.datetime;
 import derelict.sdl2.sdl, derelict.sdl2.image, derelict.sdl2.mixer, derelict.sdl2.ttf;
 import texture, entity, mario, input, game, terrain, util, goomba;
 
@@ -15,15 +15,15 @@ public bool MINIMIZED = false;
 
 bool stop = false;
 
-uint prevTime;
+long prevTime;
 
 void main() {
   //Initialize, and quit if it fails
   if (!init()) return;
 
-  Terrain t = new Terrain(5, 13, [
-    bitArray([1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0]),
-    bitArray([1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0]),
+  Terrain t = new Terrain(1, 12, [
+    bitArray([1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0]),
+    bitArray([1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0]),
     bitArray([0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1]),
     bitArray([0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1]),
     bitArray([0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1]),
@@ -38,8 +38,6 @@ void main() {
   SDL_Event e;
   
   while (!stop) {
-    //GC.disable;
-
     //pre-event polling
     controller.update;
 
@@ -66,8 +64,9 @@ void main() {
 
     checkForResize();
 
-    uint now = SDL_GetTicks();
-    game.deltaTime = (now-prevTime)/1000.0;
+    //Update delta time (currStdTime is given in hecto-nanoseconds = 1*10^-7 seconds)
+    long now = Clock.currStdTime();
+    game.deltaTime = (now-prevTime)/10000000.0;
     prevTime = now;
     game.totalTime += game.deltaTime;
     
@@ -107,10 +106,12 @@ void main() {
       ent.checkEntityCollisionsY;
     }
 
+    //remove entities if they were scheduled to be removed
+    game.entities = game.entities.filter!(ent => !ent.removeFlag).array;
+
     SDL_SetRenderTarget(RENDERER, SCREEN_TEX); 
     SDL_SetRenderDrawColor(RENDERER, 0xFF, 0xFF, 0xFF, 0xFF);
     SDL_RenderClear(RENDERER);
-
 
     //Draw shadows
     foreach (obj; game.tileobjs) {
@@ -131,8 +132,6 @@ void main() {
     foreach (ent; game.entities) {
       ent.draw;
     }
-
-
 
     SDL_SetRenderTarget(RENDERER, null); 
     SDL_Rect renderQuad = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
@@ -201,10 +200,10 @@ bool init() {
   controller = new Controller;
   game.entities ~= new Mario(0,0);
   //game.entities ~= new Mario(3,0);
-  game.entities ~= new Goomba(10, 5);
+  game.entities ~= new Goomba(5, 5);
   Terrain.init();
 
-  prevTime = SDL_GetTicks();
+  prevTime = Clock.currStdTime();
 
   return true;
 }
