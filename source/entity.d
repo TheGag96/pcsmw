@@ -124,7 +124,7 @@ abstract class Entity {
     //if (!collidesWithBlocks) return;
 
     int secondTime = 0;
-    rectangle neighborBounds = boundingRectangle();
+    rectangle neighborBounds = roundedBounds();
     int offset = 0;
 
     //Because doing both x and y updates at the same time is suicide with collisions,
@@ -190,7 +190,7 @@ abstract class Entity {
     //if (!collidesWithBlocks) return;
 
     int secondTime = 0;
-    rectangle neighborBounds = boundingRectangle();
+    rectangle neighborBounds = roundedBounds();
     int offset = 0;
 
     //Because doing both x and y updates at the same time is suicide with collisions,
@@ -291,8 +291,12 @@ abstract class Entity {
     y = newY;
   }
 
+  protected rectangle roundedBounds() {
+    return rectangle(round(x), round(y), width, height);
+  }
+
   protected rectangle boundingRectangle() {
-    return rectangle(cast(int)round(x), cast(int)round(y), width, height);
+    return rectangle(x, y, width, height);
   }
 
   protected bool intersects(rectangle other) {

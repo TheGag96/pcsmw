@@ -1,7 +1,7 @@
-import entity, texture, util, game, blocks, mario, sound;
+import entity, texture, util, game, blocks, mario, sound, enemy;
 import std.stdio;
 
-class Goomba : Entity {
+class Goomba : Enemy {
   int state = 0;
 
   private static animation DEFAULT = animation(0, 0, 16, 16, 2, 10.0/60);
@@ -63,21 +63,15 @@ class Goomba : Entity {
     }
   }
 
-  static immutable float SPINKILL_BOOST = -8.0 /16*60/16;
+  
 
   public override void onEntityColliding(Entity ent, Direction dir) {
     Mario m = cast(Mario)ent;
-    if (state == 0 && dir == Direction.TOP && m && m.prevY+m.height <= y) {
-      if (m.spinjumping) {
-        removeFlag = true;
-        m.velY = SPINKILL_BOOST;
-        util.playSound("spikill");
-      }
-      else {
+    if (state == 0) {
+      auto result = checkMarioOnTopCommon(m, dir);
+
+      if (result == Collided.yes && !removeFlag) {
         state = 1;
-        m.velY = Mario.JUMPVEL_RUN;
-        m.newY = y-m.height;
-        util.playSound("kick");
       }
     }
   }
