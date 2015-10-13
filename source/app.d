@@ -21,7 +21,7 @@ void main() {
   //Initialize, and quit if it fails
   if (!init()) return;
 
-  Terrain t = new Terrain(1, 12, [
+  Terrain t = new Terrain(1, 13, [
     bitArray([1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0]),
     bitArray([1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0]),
     bitArray([0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1]),

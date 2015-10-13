@@ -92,7 +92,7 @@ void addTileObjectToWorld(Terrain t) {
 }
 
 void buildEntitySectors() {
-  foreach (list; game.entitySectors.byValue) {
+  foreach (ref list; game.entitySectors.byValue) {
     list.length = 0;
   }
 
