@@ -15,6 +15,8 @@ public bool MINIMIZED = false;
 
 bool stop = false;
 
+uint prevTime;
+
 void main() {
   //Initialize, and quit if it fails
   if (!init()) return;
@@ -61,10 +63,15 @@ void main() {
         }
       }
     }
-    
-    if (MINIMIZED) continue;
 
     checkForResize();
+
+    uint now = SDL_GetTicks();
+    game.deltaTime = (now-prevTime)/1000.0;
+    prevTime = now;
+    game.totalTime += game.deltaTime;
+    
+    if (MINIMIZED) continue;
 
     game.frame++;
 
@@ -131,11 +138,6 @@ void main() {
     SDL_Rect renderQuad = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
     SDL_RenderCopy(RENDERER, SCREEN_TEX, null, &renderQuad);
     SDL_RenderPresent(RENDERER);
-
-    //Delay for next frame
-    //SDL_Delay(16);
-    //GC.enable;
-    
   }
   
   //Clean up everything before closing out
@@ -202,6 +204,8 @@ bool init() {
   game.entities ~= new Goomba(10, 5);
   Terrain.init();
 
+  prevTime = SDL_GetTicks();
+
   return true;
 }
 
@@ -211,5 +215,6 @@ void quit() {
   SDL_DestroyRenderer(RENDERER);
   SDL_DestroyTexture(SCREEN_TEX);
   IMG_Quit();
+  Mix_CloseAudio();
   SDL_Quit();
 }

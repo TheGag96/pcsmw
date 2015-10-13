@@ -13,3 +13,5 @@ public int frame = -1;
 
 Sound[string] sounds;
 
+public float deltaTime;
+public float totalTime = 0;

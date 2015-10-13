@@ -25,6 +25,10 @@ abstract class Entity {
     int frames;
     int delay;
     int offsetX = 0, offsetY = 0;
+
+    int getFrame(int startFrame = 0) {
+      return ((game.frame - startFrame) % (frames*delay)) / delay;
+    }
   }
 
   public animation* chosenAnim;
@@ -65,6 +69,16 @@ abstract class Entity {
   public void onBlockCollision(block b, Direction dir) { }
   public void onEntityColliding(Entity other, Direction dir) { }
   public void onCollisionWithEntity(Entity other, Direction dir) { }
+
+  //All accelerations applied per-frame to an Entity are done assuming 60 frames per second.
+  //To account for higher/lower framerates, a ratio of that acceleration must be used to ensure
+  //the Entity goes at right real speed.
+  public void applyAccelerationX(float accel) {
+    velX += accel*game.deltaTime/(1.0/60);
+  }
+  public void applyAccelerationY(float accel) {
+    velY+= accel*game.deltaTime/(1.0/60);
+  }
 
   ////
   //Begin collision code

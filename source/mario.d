@@ -89,31 +89,31 @@ class Mario : Entity {
     if (blocked.down && (ducking || (!controller.pressed("right") && !controller.pressed("left")))) {
       float prev = sgn(velX);
       if (velX != 0) {
-        velX -= sgn(velX)*FRICTION;
+        applyAccelerationX(-sgn(velX)*FRICTION);
       }
       if (prev != sgn(velX)) velX = 0;
     }
     else if (controller.pressed("left")) {
       if (velX <= 0) {
-        if (velX < -targetVel-HORIZ_ACCEL) velX += FRICTION;
+        if (velX < -targetVel-HORIZ_ACCEL) applyAccelerationX(FRICTION);
         else if (velX < -targetVel) velX = -targetVel-SPEED_CYCLE[game.frame % 5];
-        else velX -= HORIZ_ACCEL;
+        else applyAccelerationX(-HORIZ_ACCEL);
       }
       else {
-        if (controller.pressed("run")) velX -= TURNAROUND_RUN;
-        else velX -= TURNAROUND_WALK;
+        if (controller.pressed("run")) applyAccelerationX(-TURNAROUND_RUN);
+        else applyAccelerationX(-TURNAROUND_WALK);
       }
       direction = false;
     }
     else if (controller.pressed("right")) {
       if (velX >= 0) {
-        if (velX > targetVel+HORIZ_ACCEL) velX -= FRICTION;
+        if (velX > targetVel+HORIZ_ACCEL) applyAccelerationX(-FRICTION);
         else if (velX > targetVel) velX = targetVel+SPEED_CYCLE[game.frame % 5];
-        else velX += HORIZ_ACCEL;
+        else applyAccelerationX(HORIZ_ACCEL);
       }
       else {
-        if (controller.pressed("run")) velX += TURNAROUND_RUN;
-        else velX += TURNAROUND_WALK;
+        if (controller.pressed("run")) applyAccelerationX(TURNAROUND_RUN);
+        else applyAccelerationX(TURNAROUND_WALK);
       }
       direction = true;
     }
@@ -174,11 +174,11 @@ class Mario : Entity {
     }
 
     ////
-    //GRAVITY_NORMAL (amount applied depends on whether or not player is holding a jump button)
+    //Gravity (amount applied depends on whether or not player is holding a jump button)
     ////
 
-    if (controller.pressed("jump") || controller.pressed("spinjump")) velY += GRAVITY_HOLDA;
-    else velY += GRAVITY_NORMAL;
+    if (controller.pressed("jump") || controller.pressed("spinjump")) applyAccelerationY(GRAVITY_HOLDA);
+    else applyAccelerationY(GRAVITY_NORMAL);
     if (velY > TERMINAL_VELOCITY) velY = TERMINAL_VELOCITY;
 
     ////
