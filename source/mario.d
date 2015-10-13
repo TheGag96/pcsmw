@@ -124,7 +124,7 @@ class Mario : Entity {
     }
     else {
       if (runTimer > 0 && (blocked.down || !jumping)) runTimer -= game.deltaTime;
-      else runTimer = 0;
+      if (runTimer < 0) runTimer = 0;
     }
 
     if (spinjumping) {
