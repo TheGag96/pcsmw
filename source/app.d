@@ -1,6 +1,6 @@
 import std.stdio, std.algorithm, std.string, std.conv, std.bitmanip, core.memory;
 import derelict.sdl2.sdl, derelict.sdl2.image, derelict.sdl2.mixer, derelict.sdl2.ttf;
-import texture, entity, mario, input, game, terrain, util;
+import texture, entity, mario, input, game, terrain, util, goomba;
 
 public int SCREEN_WIDTH = 1280;
 public int SCREEN_HEIGHT = 720;
@@ -199,6 +199,7 @@ bool init() {
   controller = new Controller;
   game.entities ~= new Mario(0,0);
   //game.entities ~= new Mario(3,0);
+  game.entities ~= new Goomba(10, 5);
   Terrain.init();
 
   return true;

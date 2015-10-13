@@ -81,7 +81,7 @@ class Texture {
     SDL_RenderCopy(RENDERER, texture, null, &renderQuad);
   }
 
-  public void render(float x, float y, in intrect r, bool flip = false) {
+  public void render(float x, float y, in intrect r, bool flipX = false, bool flipY = false) {
 
     SDL_Rect clip = {r.x, r.y, r.width, r.height};
     SDL_Rect renderQuad = {cast(int)(x*16), cast(int)(y*16), r.width, r.height};
@@ -98,7 +98,7 @@ class Texture {
                      &renderQuad,
                      0,
                      null,
-                     flip);
+                     (flipX ? SDL_FLIP_HORIZONTAL : 0) | (flipY ? SDL_FLIP_VERTICAL : 0));
   }
 
   public void renderShadow(int x, int y) {
@@ -111,7 +111,7 @@ class Texture {
     SDL_RenderCopy(RENDERER, texture, null, &renderQuad);
   }
 
-  public void renderShadow(float x, float y, in intrect r, bool flip = false) {
+  public void renderShadow(float x, float y, in intrect r, bool flipX = false, bool flipY = false) {
 
     SDL_Rect clip = {r.x, r.y, r.width, r.height};
     SDL_Rect renderQuad = {cast(int)(x*16+3), cast(int)(y*16+3), r.width, r.height};
@@ -128,6 +128,6 @@ class Texture {
                      &renderQuad,
                      0,
                      null,
-                     flip);
+                     (flipX ? SDL_FLIP_HORIZONTAL : 0) | (flipY ? SDL_FLIP_VERTICAL : 0));
   }
 }
