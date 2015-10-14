@@ -18,10 +18,6 @@ class Goomba : Enemy {
       util.registerSound("kick", new Sound("data/sfx/kick.wav"));
     }
 
-    if (util.getSound("spinkill") is null) {
-      util.registerSound("spinkill", new Sound("data/sfx/spinkill.wav"));
-    }
-
     width = 1; height = 1;
     drawWidth = 16; drawHeight = 16;
     drawOffsetX = 0; drawOffsetY = 0;

@@ -42,9 +42,22 @@ Sound registerSound(string name, Sound tex) {
   return tex;
 }
 
+Sound loadSound(string name, string filename) {
+  Sound* ptr = name in sounds;
+  if (ptr is null) {
+    Sound snd = new Sound(filename);
+    sounds[name] = snd;
+    return snd;
+  }
+  else return (*ptr);
+}
+
 void playSound(string name) {
   Sound* ptr = name in sounds;
-  if (ptr !is null) {
+  if (ptr is null) {
+    writeln("Error: no sound loaded called \"", name, "\"");
+  }
+  else {
     (*ptr).play;
   }
 }

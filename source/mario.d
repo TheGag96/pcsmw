@@ -7,16 +7,28 @@ class Mario : Entity {
 
   //various flags
   mixin(bitfields!(
-      bool, "jumping", 1,
-      bool, "spinjumping", 1,
-      bool, "runJumping", 1,
-      bool, "ducking", 1,
-      bool, "direction", 1,   //fals for left, right for true
-      bool, "spinDir", 1,
-      bool, "wasDucking", 1,
-      int, "", 1)
+    bool, "jumping",     1,
+    bool, "spinjumping", 1,
+    bool, "runJumping",  1,
+    bool, "ducking",     1,
+    bool, "direction",   1,   //false for left, right for true
+    bool, "spinDir",     1,
+    bool, "wasDucking",  1,
+    int, "", 1)
   );
 
+  enum Powerup {
+    SMALL = 0,
+    BIG,
+    CAPE,
+    FIRE,
+    RACCOON,
+    ICE
+  }
+
+  Powerup powerup = Powerup.BIG;
+
+  int consecutiveEnemyBounces = 0;
 
   public this(float x, float y) {
     super(x, y);
@@ -129,7 +141,8 @@ class Mario : Entity {
 
     if (spinjumping) {
       direction = true;
-      if (!blocked.down) spinDir = cast(bool)((1-((game.frame - animStart) % (SPINNING.frames*SPINNING.delay))) / SPINNING.delay / 2);
+      animation* spin_anim = &anims[AnimID.SPINNING];
+      if (!blocked.down) spinDir = cast(bool)((1-((game.totalTime - animStart) % (spin_anim.frames*spin_anim.delay))) / spin_anim.delay / 2);
     }
 
     ////
@@ -139,6 +152,8 @@ class Mario : Entity {
     wasDucking = ducking;
 
     if (blocked.down) {
+      consecutiveEnemyBounces = 0;
+
       float jumpCoeff = 0;
 
       if (controller.pressedOneFrame("jump")) {
@@ -247,74 +262,108 @@ class Mario : Entity {
     super.drawShadow;
   }
 
-  static animation STANDING = animation(0,  0,   16, 32, 1, 1.0/60);
-  static animation LOOK_UP  = animation(64, 0,   16, 32, 1, 1.0/60);
-  static animation WALKING  = animation(0,  0,   16, 32, 3, 6.0/60);
-  static animation JOGGING  = animation(0,  0,   16, 32, 3, 3.0/60);
-  static animation DUCKING  = animation(0,  64,  16, 16, 1, 1.0/60, 0, 5);
-  static animation JUMPING  = animation(0,  32,  16, 32, 1, 1.0/60);
-  static animation FALLING  = animation(16, 32,  16, 32, 1, 1.0/60);
-  static animation RUNNING  = animation(0,  80,  32, 32, 5, 1.0/60, -8, 0);
-  static animation RUN_JUMP = animation(0,  112, 32, 32, 1, 1.0/60, -8, 0);
-  static animation TURNING  = animation(48, 0,   16, 32, 1, 1.0/60);
-  static animation SPINNING = animation(96, 0,   16, 32, 4, 3.0/60);
+  enum AnimID {
+    STANDING = 0,
+    LOOK_UP,
+    WALKING,
+    JOGGING,
+    DUCKING,
+    JUMPING,
+    FALLING,
+    RUNNING,
+    RUN_JUMP,
+    TURNING,
+    SPINNING
+  }
+
+  static animation[] anims = [
+    /* STANDING */ animation(0,  0,   16, 32, 1, 1.0/60),
+    /* LOOK_UP  */ animation(64, 0,   16, 32, 1, 1.0/60),
+    /* WALKING  */ animation(0,  0,   16, 32, 3, 6.0/60),
+    /* JOGGING  */ animation(0,  0,   16, 32, 3, 3.0/60),
+    /* DUCKING  */ animation(0,  64,  16, 16, 1, 1.0/60, 0, 5),
+    /* JUMPING  */ animation(0,  32,  16, 32, 1, 1.0/60),
+    /* FALLING  */ animation(16, 32,  16, 32, 1, 1.0/60),
+    /* RUNNING  */ animation(0,  80,  32, 32, 5, 1.0/60, -8, 0),
+    /* RUN_JUMP */ animation(0,  112, 32, 32, 1, 1.0/60, -8, 0),
+    /* TURNING  */ animation(48, 0,   16, 32, 1, 1.0/60),
+    /* SPINNING */ animation(96, 0,   16, 32, 4, 3.0/60),
+
+    /* STANDING_SMALL */ animation(0,  144, 16, 32, 1, 1.0/60),
+    /* LOOK_UP_SMALL  */ animation(64, 144, 16, 32, 1, 1.0/60),
+    /* WALKING_SMALL  */ animation(0,  144, 16, 32, 2, 6.0/60),
+    /* JOGGING_SMALL  */ animation(0,  144, 16, 32, 2, 3.0/60),
+    /* DUCKING_SMALL  */ animation(0,  208, 16, 16, 1, 1.0/60, 0, 5),
+    /* JUMPING_SMALL  */ animation(0,  176, 16, 32, 1, 1.0/60),
+    /* FALLING_SMALL  */ animation(16, 176, 16, 32, 1, 1.0/60),
+    /* RUNNING_SMALL  */ animation(32, 176, 32, 32, 2, 1.0/60),
+    /* RUN_JUMP_SMALL */ animation(64, 276, 32, 32, 1, 1.0/60),
+    /* TURNING_SMALL  */ animation(32, 144, 16, 32, 1, 1.0/60),
+    /* SPINNING_SMALL */ animation(64, 144, 16, 32, 4, 3.0/60)
+  ];
 
   //TODO: add animations for small mario
 
+  private animation* chooseAnimation(AnimID id) {
+    int small = (powerup == 0 ? AnimID.max : 0);
+    return &anims[id + small];
+  }
+
   public override void updateAnimation() {
     animation* prev = chosenAnim;
+
     if (state == 0) {
       if (ducking) {
-        chosenAnim = &DUCKING;
+        chosenAnim = chooseAnimation(AnimID.DUCKING);
       }
       else if (blocked.down) {
         if (controller.pressed("left")) {
           if (velX <= -MAX_RUN) {
-            chosenAnim = &RUNNING;
+            chosenAnim = chosenAnim = chooseAnimation(AnimID.RUNNING);
           }
           else if (velX <= -MAX_JOG) {
-            chosenAnim = &JOGGING;
+            chosenAnim = chosenAnim = chooseAnimation(AnimID.JOGGING);
           }
           else if (velX <= 0) {
-            chosenAnim = &WALKING;
+            chosenAnim = chosenAnim = chooseAnimation(AnimID.WALKING);
           }
           else {
-            chosenAnim = &TURNING;
+            chosenAnim = chosenAnim = chooseAnimation(AnimID.TURNING);
           }
         }
         else if (controller.pressed("right")) {
           if (velX >= MAX_RUN) {
-            chosenAnim = &RUNNING;
+            chosenAnim = chosenAnim = chooseAnimation(AnimID.RUNNING);
           }
           else if (velX >= MAX_JOG) {
-            chosenAnim = &JOGGING;
+            chosenAnim = chosenAnim = chooseAnimation(AnimID.JOGGING);
           }
           else if (velX >= 0) {
-            chosenAnim = &WALKING;
+            chosenAnim = chosenAnim = chooseAnimation(AnimID.WALKING);
           }
           else {
-            chosenAnim = &TURNING;
+            chosenAnim = chooseAnimation(AnimID.TURNING);
           } 
         }
         else if (controller.pressed("up") && velX == 0) {
-          chosenAnim = &LOOK_UP;
+          chosenAnim = chooseAnimation(AnimID.LOOK_UP);
         }
         else {
-          if (velX == 0) chosenAnim = &STANDING;
-          else chosenAnim = &WALKING;
+          if (velX == 0) chosenAnim = chooseAnimation(AnimID.STANDING);
+          else chosenAnim = chooseAnimation(AnimID.WALKING);
         }
       }
       else if (spinjumping) {
-        chosenAnim = &SPINNING;
+        chosenAnim = chooseAnimation(AnimID.SPINNING);
       }
       else if (runJumping) {
-        chosenAnim = &RUN_JUMP;
+        chosenAnim = chooseAnimation(AnimID.RUN_JUMP);
       }
       else if (jumping && velY <= 0) {
-        chosenAnim = &JUMPING;
+        chosenAnim = chooseAnimation(AnimID.JUMPING);
       } 
       else {
-        chosenAnim = &FALLING;
+        chosenAnim = chooseAnimation(AnimID.FALLING);
       }
     }
     
