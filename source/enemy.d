@@ -21,7 +21,7 @@ abstract class Enemy : Entity {
   alias Collided = Flag!"collided";
 
   protected Collided checkMarioOnTopCommon(Mario m, Direction dir) {
-    if (m !is null && dir == Direction.TOP && m && m.prevY+m.height <= y) {
+    if (m !is null && dir == Direction.TOP && m.prevY+m.height <= y) {
       if (m.spinjumping) {
         removeFlag = true;
         m.velY = SPINKILL_BOOST;
@@ -33,6 +33,14 @@ abstract class Enemy : Entity {
         m.consecutiveEnemyBounces++;
         util.playSound("hit"~m.consecutiveEnemyBounces.to!string); 
       }
+      return Collided.yes;
+    }
+    return Collided.no;
+  }
+
+  protected Collided checkMarioSideCommon(Mario m, Direction dir) {
+    if (m !is null && (dir == Direction.LEFT || dir == Direction.RIGHT)) {
+      //TODO
       return Collided.yes;
     }
     return Collided.no;

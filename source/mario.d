@@ -259,7 +259,11 @@ class Mario : Entity {
 
   public override void drawShadow() {
     updateAnimation();
-    super.drawShadow;
+    int frameIndex = chosenAnim.getFrame(animStart);
+    texture.renderShadow(x + drawOffsetX/16.0 + chosenAnim.offsetX/16.0, 
+                         y + drawOffsetY/16.0 + chosenAnim.offsetY/16.0, 
+                         intrect(chosenAnim.x + chosenAnim.width*frameIndex, chosenAnim.y, chosenAnim.width, chosenAnim.height),
+                         !direction);
   }
 
   enum AnimID {
@@ -287,8 +291,10 @@ class Mario : Entity {
     /* RUNNING  */ animation(0,  80,  32, 32, 5, 1.0/60, -8, 0),
     /* RUN_JUMP */ animation(0,  112, 32, 32, 1, 1.0/60, -8, 0),
     /* TURNING  */ animation(48, 0,   16, 32, 1, 1.0/60),
-    /* SPINNING */ animation(96, 0,   16, 32, 4, 3.0/60),
+    /* SPINNING */ animation(96, 0,   16, 32, 4, 3.0/60)
+  ];
 
+  static animation[] anims_small = [
     /* STANDING_SMALL */ animation(0,  144, 16, 32, 1, 1.0/60),
     /* LOOK_UP_SMALL  */ animation(64, 144, 16, 32, 1, 1.0/60),
     /* WALKING_SMALL  */ animation(0,  144, 16, 32, 2, 6.0/60),
@@ -302,11 +308,13 @@ class Mario : Entity {
     /* SPINNING_SMALL */ animation(64, 144, 16, 32, 4, 3.0/60)
   ];
 
-  //TODO: add animations for small mario
-
   private animation* chooseAnimation(AnimID id) {
-    int small = (powerup == 0 ? AnimID.max : 0);
-    return &anims[id + small];
+    if (id < anims_small.length && powerup == 0) {
+      return &anims_small[id];
+    }
+    else {
+      return &anims[id];
+    }
   }
 
   public override void updateAnimation() {
