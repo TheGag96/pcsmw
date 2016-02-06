@@ -3,7 +3,8 @@ import std.bitmanip, std.stdio;
 import derelict.sdl2.sdl;
 
 class Terrain : TileObject {
-  static Texture tileset;
+  static Texture terrainSet;
+
   //BitArray[] bits;
   //int x, y;
   //int width, height;
@@ -63,9 +64,9 @@ class Terrain : TileObject {
 
 
   public static void init() {
-    tileset = util.getTexture("grassy");
-    if (tileset is null) {
-      tileset = util.registerTexture("grassy", new Texture("data/grassy.png"));
+    terrainSet = util.getTexture("grassy");
+    if (terrainSet is null) {
+      terrainSet = util.registerTexture("grassy", new Texture("data/grassy.png"));
     }
 
     pic_map = 
@@ -117,10 +118,8 @@ class Terrain : TileObject {
         tiles[cast(long)row << 32 | cast(long)col] = tile(cast(int)col, cast(int)row, pic_map[index], corner_map[corners]);
       }
     }
-  }
 
-  public ~this() {
-    if (bigTex !is null) SDL_DestroyTexture(bigTex);
+    tileset = terrainSet;
   }
 
   public block getBlockAt(int x, int y) {
@@ -130,42 +129,11 @@ class Terrain : TileObject {
     return block(BlockType.EMPTY, rectangle(0,0,0,0));
   }
 
-  public void render() {
-    uint pixelFormat;
-    SDL_QueryTexture(tileset.texture, &pixelFormat, null, null, null);
-    bigTex = SDL_CreateTexture(RENDERER, pixelFormat, SDL_TEXTUREACCESS_TARGET, width*16, height*16);
-    SDL_SetTextureBlendMode(bigTex, SDL_BLENDMODE_BLEND);
-
-    SDL_SetRenderTarget(RENDERER, bigTex); 
+  protected void preRenderTiles() {
     foreach (a; tiles.byValue) {
-      tileset.render(a.x, a.y, *(a.pic));
+      this.tileset.render(a.x, a.y, *(a.pic));
       if (a.corner !is null)
-        tileset.render(a.x, a.y, *(a.corner));
+        this.tileset.render(a.x, a.y, *(a.corner));
     }
-
-    SDL_SetRenderTarget(RENDERER, SCREEN_TEX);
   }
-
-  public void draw() {
-    //Render to big texture before drawing to screen and cache it
-    //This is far, FAR faster. Thanks SO user gnidmoo    
-    if (bigTex is null) render();
-
-    SDL_Rect renderQuad = {x*16, y*16, width*16, height*16};
-    SDL_SetTextureColorMod(bigTex, 255, 255, 255);
-    SDL_SetTextureAlphaMod(bigTex, 255);
-    
-    SDL_RenderCopy(RENDERER, bigTex, null, &renderQuad);
-  }
-
-  public void drawShadow() {
-    if (bigTex is null) render();
-    SDL_SetTextureColorMod(bigTex, 0, 0, 0);
-    SDL_SetTextureAlphaMod(bigTex, 64);
-
-    SDL_Rect shadowQuad = {x*16+3, y*16+3, width*16, height*16};
-    SDL_RenderCopy(RENDERER, bigTex, null, &shadowQuad);
-    
-  }
-
 }

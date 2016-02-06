@@ -32,7 +32,7 @@ void main() {
 
   Terrain t2 = new Terrain(0, 20, [ bitArray([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])]);
 
-  Pipe p1 = new Pipe(8, 14, 3, Orientation.UP);
+  Pipe p1 = new Pipe(8, 11, 3, Orientation.UP);
 
   util.addTileObjectToWorld(t);
   util.addTileObjectToWorld(p1);
