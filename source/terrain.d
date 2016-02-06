@@ -1,12 +1,12 @@
-import texture, app, blocks, util;
+import texture, app, blocks, util, tileobject;
 import std.bitmanip, std.stdio;
 import derelict.sdl2.sdl;
 
-class Terrain {
+class Terrain : TileObject {
   static Texture tileset;
   //BitArray[] bits;
-  int x, y;
-  int width, height;
+  //int x, y;
+  //int width, height;
 
   //clipping types
   static intrect TOP_LEFT     = intrect(0, 0, 16, 16);

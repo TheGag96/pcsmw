@@ -1,6 +1,6 @@
 import std.stdio, std.algorithm, std.string, std.conv, std.bitmanip, std.array, std.datetime;
 import derelict.sdl2.sdl, derelict.sdl2.image, derelict.sdl2.mixer, derelict.sdl2.ttf;
-import texture, entity, mario, input, game, terrain, util, goomba;
+import texture, entity, mario, input, game, terrain, util, goomba, pipe, tileobject;
 
 public int SCREEN_WIDTH = 1280;
 public int SCREEN_HEIGHT = 720;
@@ -32,7 +32,10 @@ void main() {
 
   Terrain t2 = new Terrain(0, 20, [ bitArray([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])]);
 
+  Pipe p1 = new Pipe(8, 14, 3, Orientation.UP);
+
   util.addTileObjectToWorld(t);
+  util.addTileObjectToWorld(p1);
   util.addTileObjectToWorld(t2);
 
   SDL_Event e;
@@ -144,13 +147,12 @@ void main() {
 }
 
 void checkForResize() {
-    int prevW = SCREEN_WIDTH, prevH = SCREEN_HEIGHT;
-    SDL_GetWindowSize(WINDOW, &SCREEN_WIDTH, &SCREEN_HEIGHT);
-    if (prevW != SCREEN_WIDTH || prevH != SCREEN_HEIGHT) {
-      SDL_DestroyTexture(SCREEN_TEX);
-      SCREEN_TEX = SDL_CreateTexture(RENDERER, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, SCREEN_WIDTH, SCREEN_HEIGHT);
-    }
-
+  int prevW = SCREEN_WIDTH, prevH = SCREEN_HEIGHT;
+  SDL_GetWindowSize(WINDOW, &SCREEN_WIDTH, &SCREEN_HEIGHT);
+  if (prevW != SCREEN_WIDTH || prevH != SCREEN_HEIGHT) {
+    SDL_DestroyTexture(SCREEN_TEX);
+    SCREEN_TEX = SDL_CreateTexture(RENDERER, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, SCREEN_WIDTH, SCREEN_HEIGHT);
+  }
 }
 
 ///Initialize all SDL stuff and return false if it fails (this leads to the game quitting immediately)
@@ -201,7 +203,8 @@ bool init() {
   game.entities ~= new Mario(0,0);
   //game.entities ~= new Mario(3,0);
   game.entities ~= new Goomba(5, 5);
-  Terrain.init();
+
+  TileObject.init();
 
   prevTime = Clock.currStdTime();
 

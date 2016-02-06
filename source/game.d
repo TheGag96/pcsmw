@@ -1,10 +1,10 @@
-import app, entity, terrain, sound;
+import app, entity, tileobject, sound;
 import std.variant;
 
 public Entity[] entities;
-public Terrain[] tileobjs;
+public TileObject[] tileobjs;
 
-Terrain[][long] sectors;
+TileObject[][long] sectors;
 Entity[][long] entitySectors;
 
 public int[string] variables;

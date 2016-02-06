@@ -1,5 +1,5 @@
 import std.typecons, std.stdio, std.bitmanip;
-import game, blocks, terrain, texture, sound;
+import game, blocks, terrain, texture, sound, tileobject;
 
 alias rectangle = Tuple!(float, "x", float, "y", float, "width", float, "height");
 
@@ -85,7 +85,7 @@ block getBlockAt(int x, int y) {
 
 enum SECTOR_SIZE = 16;
 
-void addTileObjectToWorld(Terrain t) {
+void addTileObjectToWorld(TileObject t) {
   long startSectorX = t.x/SECTOR_SIZE,         startSectorY = t.y/SECTOR_SIZE;
   long endSectorX = (t.x+t.width)/SECTOR_SIZE, endSectorY = (t.y+t.height)/SECTOR_SIZE;
 
