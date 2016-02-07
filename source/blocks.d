@@ -1,5 +1,9 @@
-import util, entity;
+module smw.blocks;
+
+import smw.util, smw.entity;
 import std.stdio;
+
+public alias blocks = smw.blocks;
 
 enum BlockType {
   EMPTY,

@@ -1,4 +1,6 @@
-import texture, app, blocks, util, tileobject;
+module smw.tileobject.pipe;
+
+import smw.texture, smw.app, smw.blocks, smw.util, smw.tileobject;
 import std.bitmanip, std.stdio;
 import derelict.sdl2.sdl;
 
@@ -30,7 +32,7 @@ class Pipe : TileObject {
     this.y = y;
     this.length = length;
     this.orientation = orientation;
-    this.color = color;
+    this.color = pipeColor;
 
     flipX = (orientation == Orientation.RIGHT);
     flipY = (orientation == Orientation.DOWN);
@@ -62,7 +64,7 @@ class Pipe : TileObject {
     return block(BlockType.EMPTY, rectangle(0,0,0,0));
   }
 
-  protected void preRenderTiles() {
+  protected void renderTiles() {
     intrect front;
     intrect longway;  
 

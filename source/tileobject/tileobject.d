@@ -1,5 +1,7 @@
+module smw.tileobject.tileobject;
+
 import std.typetuple, derelict.sdl2.sdl;
-import blocks, terrain, pipe, app, texture;
+import smw.blocks, smw.tileobject, smw.texture, smw.app;
 
 alias allTypes = TypeTuple!(Terrain, Pipe);
 
@@ -9,7 +11,7 @@ abstract class TileObject {
   Texture tileset;
 
   abstract block getBlockAt(int x, int y);
-  abstract void preRenderTiles();
+  abstract void renderTiles();
 
   static void init() {
     foreach (type; allTypes) {
@@ -31,7 +33,7 @@ abstract class TileObject {
 
     SDL_SetRenderTarget(RENDERER, renderedTexture); 
 
-    preRenderTiles();
+    renderTiles();
 
     SDL_SetRenderTarget(RENDERER, SCREEN_TEX);
   }

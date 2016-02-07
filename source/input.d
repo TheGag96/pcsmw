@@ -1,3 +1,5 @@
+module smw.input;
+
 import derelict.sdl2.sdl;
 
 public static Controller controller;

@@ -1,5 +1,9 @@
+module smw.util;
+
 import std.typecons, std.stdio, std.bitmanip;
-import game, blocks, terrain, texture, sound, tileobject;
+import smw.game, smw.blocks, smw.texture, smw.sound, smw.tileobject;
+
+public alias util = smw.util;
 
 alias rectangle = Tuple!(float, "x", float, "y", float, "width", float, "height");
 

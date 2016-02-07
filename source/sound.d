@@ -1,3 +1,5 @@
+module smw.sound;
+
 import derelict.sdl2.mixer, std.string, std.stdio;
 
 class Sound {

@@ -1,5 +1,9 @@
-import app, entity, tileobject, sound;
+module smw.game;
+
+import smw.app, smw.entity, smw.tileobject, smw.sound;
 import std.variant;
+
+public alias game = smw.game;
 
 public Entity[] entities;
 public TileObject[] tileobjs;

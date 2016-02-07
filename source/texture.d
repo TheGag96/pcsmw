@@ -1,6 +1,8 @@
+module smw.texture;
+
 import std.stdio, std.string, std.typecons;
 import derelict.sdl2.sdl, derelict.sdl2.image;
-import app, util;
+import smw.app, smw.util;
 
 alias color = Tuple!(ubyte, "r", ubyte, "g", ubyte, "b");
 alias intrect = Tuple!(int, "x", int, "y", int, "width", int, "height");

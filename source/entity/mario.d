@@ -1,4 +1,6 @@
-import entity, texture, input, app, blocks, sound, util;
+module smw.entity.mario;
+
+import smw.entity, smw.texture, smw.input, smw.app, smw.blocks, smw.sound, smw.util, smw.game;
 import std.stdio, std.algorithm, std.math, std.bitmanip;
 
 class Mario : Entity {

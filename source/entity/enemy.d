@@ -1,4 +1,6 @@
-import entity, util, game, mario;
+module smw.entity.enemy;
+
+import smw.entity, smw.util, smw.game;
 import std.typecons, std.conv;
 
 abstract class Enemy : Entity {

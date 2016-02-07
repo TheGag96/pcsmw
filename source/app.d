@@ -1,6 +1,8 @@
+module smw.app;
+
 import std.stdio, std.algorithm, std.string, std.conv, std.bitmanip, std.array, std.datetime;
 import derelict.sdl2.sdl, derelict.sdl2.image, derelict.sdl2.mixer, derelict.sdl2.ttf;
-import texture, entity, mario, input, game, terrain, util, goomba, pipe, tileobject;
+import smw.entity, smw.tileobject, smw.input, smw.game, smw.util, smw.texture;
 
 public int SCREEN_WIDTH = 1280;
 public int SCREEN_HEIGHT = 720;

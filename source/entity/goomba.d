@@ -1,4 +1,6 @@
-import entity, texture, util, game, blocks, mario, sound, enemy;
+module smw.entity.goomba;
+
+import smw.entity, smw.texture, smw.util, smw.game, smw.blocks, smw.sound;
 import std.stdio;
 
 class Goomba : Enemy {

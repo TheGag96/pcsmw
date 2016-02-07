@@ -1,4 +1,6 @@
-import texture, app, blocks, util, tileobject;
+module smw.tileobject.terrain;
+
+import smw.texture, smw.app, smw.blocks, smw.util, smw.tileobject;
 import std.bitmanip, std.stdio;
 import derelict.sdl2.sdl;
 
@@ -129,7 +131,7 @@ class Terrain : TileObject {
     return block(BlockType.EMPTY, rectangle(0,0,0,0));
   }
 
-  protected void preRenderTiles() {
+  protected void renderTiles() {
     foreach (a; tiles.byValue) {
       this.tileset.render(a.x, a.y, *(a.pic));
       if (a.corner !is null)

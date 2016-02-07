@@ -1,4 +1,6 @@
-import texture, blocks, util;
+module smw.entity.entity;
+
+import smw.texture, smw.blocks, smw.util, smw.game;
 import std.bitmanip, std.typecons, std.math, std.stdio, std.algorithm;
 
 alias Remove = Flag!"removeFlag";
