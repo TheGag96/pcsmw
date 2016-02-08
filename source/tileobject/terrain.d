@@ -117,7 +117,7 @@ class Terrain : TileObject {
         if ((index & 0b0101) == 0b0101 && (~filledDiag & 0b0001)) corners |= 0b0001;
 
         //tiles ~= tile(col, row, pic_map[index], corner_map[corners]);
-        tiles[cast(long)row << 32 | cast(long)col] = tile(cast(int)col, cast(int)row, pic_map[index], corner_map[corners]);
+        tiles[cast(long)(row+y) << 32 | cast(long)(col+x)] = tile(cast(int)(col+x), cast(int)(row+y), pic_map[index], corner_map[corners]);
       }
     }
 
@@ -125,7 +125,7 @@ class Terrain : TileObject {
   }
 
   public block getBlockAt(int x, int y) {
-    if ((cast(long)(y-this.y) << 32 | cast(long)(x-this.x)) in tiles) {
+    if ((cast(long)y << 32 | cast(long)x) in tiles) {
       return block(BlockType.SOLID, rectangle(x, y, 1, 1));
     }
     return block(BlockType.EMPTY, rectangle(0,0,0,0));
@@ -133,9 +133,9 @@ class Terrain : TileObject {
 
   protected void renderTiles() {
     foreach (a; tiles.byValue) {
-      this.tileset.render(a.x, a.y, *(a.pic));
+      this.tileset.render(a.x-x, a.y-y, *(a.pic));
       if (a.corner !is null)
-        this.tileset.render(a.x, a.y, *(a.corner));
+        this.tileset.render(a.x-x, a.y-y, *(a.corner));
     }
   }
 }

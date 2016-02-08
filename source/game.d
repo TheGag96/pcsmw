@@ -11,7 +11,7 @@ public TileObject[] tileobjs;
 TileObject[][long] sectors;
 Entity[][long] entitySectors;
 
-public int[string] variables;
+public int[string] globals;
 
 public int frame = -1;
 

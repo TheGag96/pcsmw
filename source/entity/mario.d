@@ -28,7 +28,7 @@ class Mario : Entity {
     ICE
   }
 
-  Powerup powerup = Powerup.BIG;
+  Powerup powerup = Powerup.SMALL;
 
   int consecutiveEnemyBounces = 0;
 
@@ -86,10 +86,16 @@ class Mario : Entity {
   float runTimer = 0;
   static immutable float RUN_TIMER_MAX = 56.0 / 60;
 
-  static immutable float HEIGHT_NORMAL = 25.0/16;
-  static immutable float HEIGHT_DUCKING = 14.0/16;
+  static immutable float HEIGHT_BIG = 25.0/16;
+  static immutable float HEIGHT_SMALL = 14.0/16;
+  static immutable float HEIGHT_DUCKING_BIG = 14.0/16;
+  static immutable float HEIGHT_DUCKING_SMALL = 10.0/16;
 
   public override void logic() {
+    if (controller.pressedOneFrame("debug")) {
+      powerup = (powerup == Powerup.BIG) ? Powerup.SMALL : Powerup.BIG;
+    }
+
     ////
     //Handle horizontal movement
     ////
@@ -204,15 +210,30 @@ class Mario : Entity {
     //Update hitbox
     ////
 
-    if (ducking) {
-      height = HEIGHT_DUCKING;
-      if (!wasDucking) y += HEIGHT_NORMAL-HEIGHT_DUCKING;
+    float duckHeight, unduckHeight, heightDiff;
+
+    if (powerup == Powerup.SMALL) {
+      duckHeight = HEIGHT_DUCKING_SMALL;
+      unduckHeight = HEIGHT_SMALL;
+      drawOffsetY = -17;
     }
     else {
-      height = HEIGHT_NORMAL;
+      duckHeight = HEIGHT_DUCKING_BIG;
+      unduckHeight = HEIGHT_BIG;
+      drawOffsetY = -6;
+    }
+
+    heightDiff = unduckHeight - duckHeight;
+
+    if (ducking) {
+      height = duckHeight;
+      if (!wasDucking) y += heightDiff;
+    }
+    else {
+      height = unduckHeight;
 
       if (wasDucking) {
-        y -= HEIGHT_NORMAL-HEIGHT_DUCKING;
+        y -= heightDiff;
 
         //Mario can't stand up if there's a block directly above him
         //WARNING: This is pretty messy. I may need to clean it up sometime.
@@ -220,8 +241,8 @@ class Mario : Entity {
         bool leftBlock = util.getBlockAt(cast(int)(x), cast(int)(y)).collidesWith(this);
         bool rightBlock = util.getBlockAt(cast(int)(x+width), cast(int)(y)).collidesWith(this);
         if (leftBlock && rightBlock) {
-          height = HEIGHT_DUCKING;
-          y += HEIGHT_NORMAL-HEIGHT_DUCKING;
+          height = duckHeight;
+          y += heightDiff;
           ducking = true;
           spinjumping = false;
         }
@@ -230,8 +251,8 @@ class Mario : Entity {
             x = floor(x)+1;
           }
           else {
-            height = HEIGHT_DUCKING;
-            y += HEIGHT_NORMAL-HEIGHT_DUCKING;
+            height = duckHeight;
+            y += heightDiff;
             ducking = true;
             spinjumping = false;
           }
@@ -241,8 +262,8 @@ class Mario : Entity {
             x = floor(x+width)-width;
           }
           else {
-            height = HEIGHT_DUCKING;
-            y += HEIGHT_NORMAL-HEIGHT_DUCKING;
+            height = duckHeight;
+            y += heightDiff;
             ducking = true;
             spinjumping = false;
           }
@@ -298,16 +319,17 @@ class Mario : Entity {
 
   static animation[] anims_small = [
     /* STANDING_SMALL */ animation(0,  144, 16, 32, 1, 1.0/60),
-    /* LOOK_UP_SMALL  */ animation(64, 144, 16, 32, 1, 1.0/60),
+    /* LOOK_UP_SMALL  */ animation(48, 144, 16, 32, 1, 1.0/60),
     /* WALKING_SMALL  */ animation(0,  144, 16, 32, 2, 6.0/60),
     /* JOGGING_SMALL  */ animation(0,  144, 16, 32, 2, 3.0/60),
-    /* DUCKING_SMALL  */ animation(0,  208, 16, 16, 1, 1.0/60, 0, 5),
+    /* DUCKING_SMALL  */ animation(0,  208, 16, 16, 1, 1.0/60, 0, 12),
     /* JUMPING_SMALL  */ animation(0,  176, 16, 32, 1, 1.0/60),
     /* FALLING_SMALL  */ animation(16, 176, 16, 32, 1, 1.0/60),
-    /* RUNNING_SMALL  */ animation(32, 176, 32, 32, 2, 1.0/60),
-    /* RUN_JUMP_SMALL */ animation(64, 276, 32, 32, 1, 1.0/60),
+    /* RUNNING_SMALL  */ animation(32, 176, 16, 32, 2, 2.0/60),
+    /* RUN_JUMP_SMALL */ animation(64, 176, 16, 32, 1, 1.0/60),
     /* TURNING_SMALL  */ animation(32, 144, 16, 32, 1, 1.0/60),
     /* SPINNING_SMALL */ animation(64, 144, 16, 32, 4, 3.0/60)
+    /* */
   ];
 
   private animation* chooseAnimation(AnimID id) {
@@ -329,27 +351,27 @@ class Mario : Entity {
       else if (blocked.down) {
         if (controller.pressed("left")) {
           if (velX <= -MAX_RUN) {
-            chosenAnim = chosenAnim = chooseAnimation(AnimID.RUNNING);
+            chosenAnim = chooseAnimation(AnimID.RUNNING);
           }
           else if (velX <= -MAX_JOG) {
-            chosenAnim = chosenAnim = chooseAnimation(AnimID.JOGGING);
+            chosenAnim = chooseAnimation(AnimID.JOGGING);
           }
           else if (velX <= 0) {
-            chosenAnim = chosenAnim = chooseAnimation(AnimID.WALKING);
+            chosenAnim = chooseAnimation(AnimID.WALKING);
           }
           else {
-            chosenAnim = chosenAnim = chooseAnimation(AnimID.TURNING);
+            chosenAnim = chooseAnimation(AnimID.TURNING);
           }
         }
         else if (controller.pressed("right")) {
           if (velX >= MAX_RUN) {
-            chosenAnim = chosenAnim = chooseAnimation(AnimID.RUNNING);
+            chosenAnim = chooseAnimation(AnimID.RUNNING);
           }
           else if (velX >= MAX_JOG) {
-            chosenAnim = chosenAnim = chooseAnimation(AnimID.JOGGING);
+            chosenAnim = chooseAnimation(AnimID.JOGGING);
           }
           else if (velX >= 0) {
-            chosenAnim = chosenAnim = chooseAnimation(AnimID.WALKING);
+            chosenAnim = chooseAnimation(AnimID.WALKING);
           }
           else {
             chosenAnim = chooseAnimation(AnimID.TURNING);
@@ -380,5 +402,13 @@ class Mario : Entity {
     if (prev != chosenAnim) {
       animStart = game.totalTime;
     }
+  }
+
+  public void hurt() {
+    
+  }
+
+  public void kill() {
+    
   }
 }

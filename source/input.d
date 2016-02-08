@@ -17,6 +17,7 @@ class Controller {
     keyMap[SDLK_z]     = "jump";
     keyMap[SDLK_x]     = "spinjump";
     keyMap[SDLK_a]     = "run";
+    keyMap[SDLK_q]     = "debug";
     //keyMap[SDLK_s]     = "run";
 
     foreach (code; keyMap.byValue) {
