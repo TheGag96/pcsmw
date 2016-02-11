@@ -28,7 +28,8 @@ class Mario : Entity {
     ICE
   }
 
-  Powerup powerup = Powerup.SMALL;
+  ///private member for powerup property
+  private Powerup _powerup = Powerup.SMALL;
 
   int consecutiveEnemyBounces = 0;
 
@@ -92,10 +93,6 @@ class Mario : Entity {
   static immutable float HEIGHT_DUCKING_SMALL = 10.0/16;
 
   public override void logic() {
-    if (controller.pressedOneFrame("debug")) {
-      powerup = (powerup == Powerup.BIG) ? Powerup.SMALL : Powerup.BIG;
-    }
-
     ////
     //Handle horizontal movement
     ////
@@ -209,10 +206,17 @@ class Mario : Entity {
     ////
     //Update hitbox
     ////
+    updateHitbox();
+    
+    if (controller.pressedOneFrame("debug")) {
+      powerup = (powerup == Powerup.BIG) ? Powerup.SMALL : Powerup.BIG;
+    }
+  }
 
+  private void updateHitbox() {
     float duckHeight, unduckHeight, heightDiff;
 
-    if (powerup == Powerup.SMALL) {
+    if (_powerup == Powerup.SMALL) {
       duckHeight = HEIGHT_DUCKING_SMALL;
       unduckHeight = HEIGHT_SMALL;
       drawOffsetY = -17;
@@ -226,14 +230,12 @@ class Mario : Entity {
     heightDiff = unduckHeight - duckHeight;
 
     if (ducking) {
-      height = duckHeight;
-      if (!wasDucking) y += heightDiff;
+      properSetHeight(duckHeight);
     }
     else {
-      height = unduckHeight;
-
+      properSetHeight(unduckHeight);
       if (wasDucking) {
-        y -= heightDiff;
+        //y -= heightDiff;
 
         //Mario can't stand up if there's a block directly above him
         //WARNING: This is pretty messy. I may need to clean it up sometime.
@@ -241,8 +243,7 @@ class Mario : Entity {
         bool leftBlock = util.getBlockAt(cast(int)(x), cast(int)(y)).collidesWith(this);
         bool rightBlock = util.getBlockAt(cast(int)(x+width), cast(int)(y)).collidesWith(this);
         if (leftBlock && rightBlock) {
-          height = duckHeight;
-          y += heightDiff;
+          properSetHeight(duckHeight);
           ducking = true;
           spinjumping = false;
         }
@@ -251,8 +252,7 @@ class Mario : Entity {
             x = floor(x)+1;
           }
           else {
-            height = duckHeight;
-            y += heightDiff;
+            properSetHeight(duckHeight);
             ducking = true;
             spinjumping = false;
           }
@@ -262,14 +262,18 @@ class Mario : Entity {
             x = floor(x+width)-width;
           }
           else {
-            height = duckHeight;
-            y += heightDiff;
+            properSetHeight(duckHeight);
             ducking = true;
             spinjumping = false;
           }
         }
       }
     }
+  }
+
+  private void properSetHeight(float newHeight) {
+    y += this.height - newHeight;
+    this.height = newHeight;
   }
   
   public override void draw() {
@@ -333,7 +337,7 @@ class Mario : Entity {
   ];
 
   private animation* chooseAnimation(AnimID id) {
-    if (id < anims_small.length && powerup == 0) {
+    if (id < anims_small.length && _powerup == 0) {
       return &anims_small[id];
     }
     else {
@@ -410,5 +414,11 @@ class Mario : Entity {
 
   public void kill() {
     
+  }
+
+  public @property Powerup powerup() { return this._powerup; }
+  public @property void powerup(Powerup newPU) {
+    this._powerup = newPU;
+    updateHitbox();
   }
 }

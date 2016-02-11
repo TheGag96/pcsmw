@@ -70,7 +70,7 @@ class Pipe : TileObject {
 
     if (this.orientation <= Orientation.RIGHT) {
       front = intrect(this.color * 32, 32, 16, 32);
-      longway = intrect(this.color * 32, 48, 16, 32);
+      longway = intrect(this.color * 32 + 16, 32, 16, 32);
     }
     else {
       front = intrect(this.color * 32, 0, 32, 16);

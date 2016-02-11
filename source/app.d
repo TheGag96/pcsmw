@@ -34,7 +34,7 @@ void main() {
 
   Terrain t2 = new Terrain(0, 20, [ bitArray([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])]);
 
-  Pipe p1 = new Pipe(8, 11, 3, Orientation.UP);
+  Pipe p1 = new Pipe(8, 8, 6, Orientation.UP, PipeColor.LAVENDER);
 
   util.addTileObjectToWorld(t);
   util.addTileObjectToWorld(p1);
@@ -123,7 +123,6 @@ void main() {
       obj.drawShadow;
     }
 
-
     foreach (ent; game.entities) {
       ent.drawShadow;
     }
@@ -154,7 +153,13 @@ void checkForResize() {
   if (prevW != SCREEN_WIDTH || prevH != SCREEN_HEIGHT) {
     SDL_DestroyTexture(SCREEN_TEX);
     SCREEN_TEX = SDL_CreateTexture(RENDERER, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, SCREEN_WIDTH, SCREEN_HEIGHT);
+    
+    foreach (obj; game.tileobjs) {
+      if (obj.renderedTexture !is null) SDL_DestroyTexture(obj.renderedTexture);
+      obj.renderedTexture = null;
+    }
   }
+
 }
 
 ///Initialize all SDL stuff and return false if it fails (this leads to the game quitting immediately)
@@ -205,6 +210,7 @@ bool init() {
   game.entities ~= new Mario(0,0);
   //game.entities ~= new Mario(3,0);
   game.entities ~= new Goomba(5, 5);
+  game.entities ~= new Mushroom(8, 5);
 
   TileObject.init();
 

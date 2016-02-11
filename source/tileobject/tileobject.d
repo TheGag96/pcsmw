@@ -26,6 +26,8 @@ abstract class TileObject {
   }
   
   private void render() {
+    if (renderedTexture !is null) SDL_DestroyTexture(renderedTexture);
+    
     uint pixelFormat;
     SDL_QueryTexture(tileset.texture, &pixelFormat, null, null, null);
     renderedTexture = SDL_CreateTexture(RENDERER, pixelFormat, SDL_TEXTUREACCESS_TARGET, width*16, height*16);
