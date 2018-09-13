@@ -57,14 +57,14 @@ class Pipe : TileObject {
     }
   }
 
-  public block getBlockAt(int x, int y) {
+  public override block getBlockAt(int x, int y) {
     if (x >= this.x && x < this.x+this.width && y >= this.y && y < this.y+this.height) {
       return block(BlockType.SOLID, rectangle(x, y, 1, 1));
     }
     return block(BlockType.EMPTY, rectangle(0,0,0,0));
   }
 
-  protected void renderTiles() {
+  protected override void renderTiles() {
     intrect front;
     intrect longway;  
 

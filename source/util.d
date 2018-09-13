@@ -137,14 +137,14 @@ void buildEntitySectors() {
 
 //Needed until GDC gets updated. Thanks, John Colvin.
 
-auto bitArray(bool[] ba) {
-    BitArray tmp;
-    tmp.init(ba);
-    return tmp;
-}
+//auto bitArray(bool[] ba) {
+//    BitArray tmp;
+//    tmp.init(ba);
+//    return tmp;
+//}
 
-auto bitArray(void[] v, size_t numbits) {
-    BitArray tmp;
-    tmp.init(v, numbits);
-    return tmp;
-}
+//auto bitArray(void[] v, size_t numbits) {
+//    BitArray tmp;
+//    tmp.init(v, numbits);
+//    return tmp;
+//}

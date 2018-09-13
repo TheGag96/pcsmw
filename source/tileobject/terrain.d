@@ -124,14 +124,14 @@ class Terrain : TileObject {
     tileset = terrainSet;
   }
 
-  public block getBlockAt(int x, int y) {
+  public override block getBlockAt(int x, int y) {
     if ((cast(long)y << 32 | cast(long)x) in tiles) {
       return block(BlockType.SOLID, rectangle(x, y, 1, 1));
     }
     return block(BlockType.EMPTY, rectangle(0,0,0,0));
   }
 
-  protected void renderTiles() {
+  protected override void renderTiles() {
     foreach (a; tiles.byValue) {
       this.tileset.render(a.x-x, a.y-y, *(a.pic));
       if (a.corner !is null)
